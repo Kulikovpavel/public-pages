@@ -325,14 +325,6 @@ let geo = null, hoverPos = -1;
 const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 function sizeCanvas(c){ const dpr = window.devicePixelRatio || 1, w = box.clientWidth, h = box.clientHeight; c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g, w, h}; }
 function valueOf(s, r){ return S.mode === 'pct' ? (C[s.pct][r] < 0 ? null : C[s.pct][r] / 100) : (C[s.votes][r] < 0 || (s.id !== 'tp' && C[s.pct][r] < 0) ? null : C[s.votes][r]); }
-function meanOf(s, rows){
-  let a = 0, b = 0, k = 0;
-  for (const r of rows) {
-    if (S.mode === 'pct') { if (C[s.pct][r] < 0 || C[s.base][r] <= 0 || C[s.votes][r] < 0) continue; a += C[s.votes][r]; b += C[s.base][r]; }
-    else { const v = valueOf(s, r); if (v === null) continue; a += v; k++; }
-  }
-  return S.mode === 'pct' ? (b ? a / b * 100 : null) : (k ? a / k : null);
-}
 function niceMax(v){ if (v <= 0) return 10; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
 
 function draw(){
@@ -377,7 +369,6 @@ function draw(){
     g.fillText('№ УИК →', M.l, h - 13);
   }
 
-  const spans = groupBy ? groups : [{start:0, end:n - 1, rows:sel}];
   const rad = n < 120 ? 3.2 : n < 600 ? 2.4 : n < 6000 ? 1.6 : 1.1;
   const rMax = n < 120 ? 9 : n < 600 ? 6.5 : n < 6000 ? 4 : 2.6, rMin = Math.min(1.2, rad);
   let vaMax = 1;
@@ -398,30 +389,10 @@ function draw(){
     }
     g.globalAlpha = 1;
   }
-  g.font = '500 10.5px ' + tok('--mono'); g.textBaseline = 'bottom'; g.textAlign = 'right';
-  const labels = [];
-  for (const s of active) {
-    const col = tok(s.color);
-    for (const sp of spans) {
-      const m = meanOf(s, sp.rows); if (m === null) continue;
-      const x0 = M.l + sp.start * pw / n, x1 = M.l + (sp.end + 1) * pw / n, y = Y(m);
-      g.strokeStyle = col; g.lineWidth = groupBy ? 1.6 : 1.4; g.globalAlpha = .9; g.setLineDash(groupBy ? [] : [6, 4]);
-      g.beginPath(); g.moveTo(x0 + (groupBy ? 1 : 0), y); g.lineTo(x1 - (groupBy ? 1 : 0), y); g.stroke();
-      g.setLineDash([]); g.globalAlpha = 1;
-      if (!groupBy) labels.push({y, x1, col, txt:S.mode === 'pct' ? m.toFixed(1).replace('.', ',') + '%' : fmtInt(Math.round(m))});
-    }
-  }
-  labels.sort((a, b) => a.y - b.y);
-  for (let k = 1; k < labels.length; k++) if (labels[k].y - labels[k - 1].y < 14) labels[k].y = labels[k - 1].y + 14;
-  for (const lb of labels) {
-    const tw = g.measureText(lb.txt).width;
-    g.fillStyle = surface; g.globalAlpha = .88; g.fillRect(lb.x1 - tw - 6, lb.y - 14, tw + 6, 13); g.globalAlpha = 1;
-    g.fillStyle = lb.col; g.fillText(lb.txt, lb.x1 - 3, lb.y - 2);
-  }
   const sizeNote = S.size === 'votes' ? ' Площадь точки — число действительных бюллетеней на участке (ДЭГ — максимальный размер).' : '';
   $('hint').textContent = groupBy
-    ? `Участки идут подряд внутри каждой ${groupBy === 'region' ? 'области' : 'ТИК'}, по возрастанию номера. Отрезки — итог по ${groupBy === 'region' ? 'области' : 'ТИК'}. Клик по полосе — перейти ${groupBy === 'region' ? 'в область' : 'в ТИК'}.` + sizeNote
-    : `Участки по возрастанию номера. Пунктир — итог по ТИК (${S.mode === 'pct' ? 'сумма голосов / сумма бюллетеней' : 'в среднем на участок'}). Наведите на точку, чтобы увидеть протокол.` + sizeNote;
+    ? `Участки идут подряд внутри каждой ${groupBy === 'region' ? 'области' : 'ТИК'}, по возрастанию номера. Клик по полосе — перейти ${groupBy === 'region' ? 'в область' : 'в ТИК'}.` + sizeNote
+    : `Участки по возрастанию номера. Наведите на точку, чтобы увидеть протокол.` + sizeNote;
   drawHover();
 }
 let groupStarts = new Set();
