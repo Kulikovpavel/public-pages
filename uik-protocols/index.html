@@ -140,6 +140,10 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
       <div class="range"><input type="number" id="pkMin" min="0" max="100" step="1" placeholder="от 0" aria-label="pick от"><span>–</span><input type="number" id="pkMax" min="0" max="100" step="1" placeholder="до 100" aria-label="pick до"></div>
     </div>
     <div class="f">
+      <span class="lbl"><i class="sw" style="background:var(--c-tp)"></i>Явка, %</span>
+      <div class="range"><input type="number" id="tpMin" min="0" max="100" step="1" placeholder="от 0" aria-label="Явка от"><span>–</span><input type="number" id="tpMax" min="0" max="100" step="1" placeholder="до 100" aria-label="Явка до"></div>
+    </div>
+    <div class="f">
       <div class="checks">
         <label><input type="checkbox" id="hideDeg"> Без ДЭГ</label>
         <button type="button" class="ghost" id="reset">Сбросить фильтры</button>
@@ -197,7 +201,7 @@ const fmtInt = n => n.toLocaleString('ru-RU');
 const fmtPct = bp => bp < 0 ? '—' : (bp / 100).toFixed(2).replace('.', ',');
 const fmtShare = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + '%' : '—';
 
-const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', hideDeg:false, mode:'pct', size:'fixed', show:{pw:true, er:true, pk:true, tp:false}};
+const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', show:{pw:true, er:true, pk:true, tp:false}};
 let S = structuredClone(DEFAULT);
 try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show)}); } catch (e) {}
 readUrl();
@@ -218,7 +222,7 @@ function readUrl(){
   S.tik = tik ? D.tiks.findIndex((t, i) => t[1] === tik && (S.region < 0 || t[0] === S.region)) : -1;
   if (S.tik >= 0) S.region = tikRegion[S.tik];
   S.tikq = p.get('q') || '';
-  for (const [key, lo, hi] of [['pw', 'pwMin', 'pwMax'], ['pk', 'pkMin', 'pkMax']]) {
+  for (const [key, lo, hi] of [['pw', 'pwMin', 'pwMax'], ['pk', 'pkMin', 'pkMax'], ['tp', 'tpMin', 'tpMax']]) {
     const m = (p.get(key) || '').match(/^\s*(\d+(?:[.,]\d+)?)?\s*-\s*(\d+(?:[.,]\d+)?)?\s*$/);
     if (m) { S[lo] = (m[1] || '').replace(',', '.'); S[hi] = (m[2] || '').replace(',', '.'); }
   }
@@ -235,6 +239,7 @@ function writeUrl(){
   if (S.tikq.trim()) p.set('q', S.tikq.trim());
   if (S.pwMin !== '' || S.pwMax !== '') p.set('pw', `${S.pwMin}-${S.pwMax}`);
   if (S.pkMin !== '' || S.pkMax !== '') p.set('pk', `${S.pkMin}-${S.pkMax}`);
+  if (S.tpMin !== '' || S.tpMax !== '') p.set('tp', `${S.tpMin}-${S.tpMax}`);
   if (S.hideDeg) p.set('nodeg', '1');
   if (S.mode === 'votes') p.set('scale', 'votes');
   if (S.size === 'votes') p.set('size', 'votes');
@@ -301,7 +306,7 @@ function syncControls(){
   tikq.value = S.tikq;
   fillDistrictSelect();
   fillTikSelect();
-  for (const k of ['pwMin','pwMax','pkMin','pkMax']) $(k).value = S[k];
+  for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).value = S[k];
   $('hideDeg').checked = S.hideDeg;
   $('modePct').setAttribute('aria-pressed', S.mode === 'pct');
   $('modeVotes').setAttribute('aria-pressed', S.mode === 'votes');
@@ -314,9 +319,9 @@ regionSel.onchange = () => { S.region = +regionSel.value; S.tik = -1; fillDistri
 districtSel.onchange = () => { S.district = +districtSel.value; S.tik = -1; if (S.district >= 0) S.region = districtInfo.get(S.district).region; syncControls(); update(); };
 tikq.oninput = () => { S.tikq = tikq.value; fillTikSelect(); update(); };
 tikSel.onchange = () => { S.tik = +tikSel.value; if (S.tik >= 0 && S.region < 0) { S.region = tikRegion[S.tik]; syncControls(); } update(); };
-for (const k of ['pwMin','pwMax','pkMin','pkMax']) $(k).oninput = e => { S[k] = e.target.value; update(); };
+for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).oninput = e => { S[k] = e.target.value; update(); };
 $('hideDeg').onchange = e => { S.hideDeg = e.target.checked; update(); };
-$('reset').onclick = () => { Object.assign(S, {tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', hideDeg:false}); syncControls(); update(); };
+$('reset').onclick = () => { Object.assign(S, {tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false}); syncControls(); update(); };
 $('legend').onclick = e => { const b = e.target.closest('button'); if (!b) return; S.show[b.dataset.s] = !S.show[b.dataset.s]; b.setAttribute('aria-pressed', S.show[b.dataset.s]); save(); draw(); renderTable(); };
 $('modePct').onclick = () => { S.mode = 'pct'; syncControls(); save(); draw(); };
 $('modeVotes').onclick = () => { S.mode = 'votes'; syncControls(); save(); draw(); };
@@ -331,6 +336,7 @@ function select(){
   const tikSet = S.tik >= 0 ? null : new Set(matchingTiks(m));
   const pwLo = bound(S.pwMin), pwHi = bound(S.pwMax), pkLo = bound(S.pkMin), pkHi = bound(S.pkMax);
   const pwOn = pwLo !== null || pwHi !== null, pkOn = pkLo !== null || pkHi !== null;
+  const tpLo = bound(S.tpMin), tpHi = bound(S.tpMax), tpOn = tpLo !== null || tpHi !== null;
   const out = [];
   for (let i = 0; i < N; i++) {
     const t = C.t[i];
@@ -339,6 +345,7 @@ function select(){
     if (S.hideDeg && (C.f[i] & 1)) continue;
     if (pwOn) { const v = C.pwp[i]; if (v < 0 || (pwLo !== null && v < pwLo) || (pwHi !== null && v > pwHi)) continue; }
     if (pkOn) { const v = C.pkp[i]; if (v < 0 || (pkLo !== null && v < pkLo) || (pkHi !== null && v > pkHi)) continue; }
+    if (tpOn) { const v = C.tp[i]; if (v < 0 || (tpLo !== null && v < tpLo) || (tpHi !== null && v > tpHi)) continue; }
     out.push(i);
   }
   sel = out;
