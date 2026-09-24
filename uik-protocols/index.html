@@ -124,7 +124,7 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
     <div class="f wide">
       <label for="tikq">ТИК</label>
       <div class="tikrow">
-        <input type="text" id="tikq" placeholder="Название ТИК или фамилия" autocomplete="off">
+        <input type="text" id="tikq" placeholder="Поиск по названию" autocomplete="off">
         <select id="tik"></select>
       </div>
     </div>
@@ -247,10 +247,9 @@ regionSel.innerHTML = '<option value="-1">Все области</option>' + D.re
 function shortName(n){ if (!n) return ''; const [last, ...rest] = n.split(' '); return [last, ...rest.map(w => w[0] + '.')].join(' '); }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-const tikDistricts = D.tiks.map(() => new Set()), districtNames = new Map();
+const tikDistricts = D.tiks.map(() => new Set());
 for (let i = 0; i < N; i++) {
   tikDistricts[C.t[i]].add(C.d[i]);
-  if (!districtNames.has(C.d[i])) districtNames.set(C.d[i], [D.names[C.nw[i]], D.names[C.nk[i]]].join(' ').toLowerCase());
 }
 const districtInfo = new Map();
 for (let i = 0; i < N; i++) if (!districtInfo.has(C.d[i])) districtInfo.set(C.d[i], {region:tikRegion[C.t[i]], pw:D.names[C.nw[i]], pk:D.names[C.nk[i]]});
@@ -268,20 +267,17 @@ const tikDistrictLabel = tikDistricts.map(ds => [...ds].sort((a, b) => a - b).jo
 function searchMatch(){
   const q = S.tikq.trim().toLowerCase().replace(/^№\s*/, '');
   if (!q) return null;
-  const num = /^\d+$/.test(q) ? +q : null;
-  const districts = new Set();
-  if (num === null) for (const [d, names] of districtNames) if (names.includes(q)) districts.add(d);
-  const byName = new Set();
-  const numInName = num === null ? null : new RegExp(`(^|\\D)${num}(\\D|$)`);
-  for (let i = 0; i < D.tiks.length; i++) if (numInName ? numInName.test(tikLower[i]) : tikLower[i].includes(q)) byName.add(i);
-  return {byName, districts};
+  const numInName = /^\d+$/.test(q) ? new RegExp(`(^|\\D)${q}(\\D|$)`) : null;
+  const found = new Set();
+  for (let i = 0; i < D.tiks.length; i++) if (numInName ? numInName.test(tikLower[i]) : tikLower[i].includes(q)) found.add(i);
+  return found;
 }
 function matchingTiks(m = searchMatch()){
   const out = [];
   for (let i = 0; i < D.tiks.length; i++) {
     if (S.region >= 0 && tikRegion[i] !== S.region) continue;
     if (S.district >= 0 && !tikDistricts[i].has(S.district)) continue;
-    if (m && !m.byName.has(i) && ![...tikDistricts[i]].some(d => m.districts.has(d))) continue;
+    if (m && !m.has(i)) continue;
     out.push(i);
   }
   return out;
@@ -334,7 +330,6 @@ function select(){
     const t = C.t[i];
     if (S.tik >= 0 ? t !== S.tik : !tikSet.has(t)) continue;
     if (S.district >= 0 && C.d[i] !== S.district) continue;
-    if (m && !m.byName.has(t) && !m.districts.has(C.d[i])) continue;
     if (S.hideDeg && (C.f[i] & 1)) continue;
     if (pwOn) { const v = C.pwp[i]; if (v < 0 || (pwLo !== null && v < pwLo) || (pwHi !== null && v > pwHi)) continue; }
     if (pkOn) { const v = C.pkp[i]; if (v < 0 || (pkLo !== null && v < pkLo) || (pkHi !== null && v > pkHi)) continue; }
