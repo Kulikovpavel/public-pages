@@ -76,10 +76,11 @@ button:hover{background:var(--hover)}
 .chartbox{position:relative;height:380px}
 .chartbox canvas{position:absolute;inset:0;width:100%;height:100%}
 .hint{font-size:12px;color:var(--faint)}
-.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 20px rgba(10,20,40,.14);min-width:220px;max-width:300px;z-index:5}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 20px rgba(10,20,40,.14);min-width:240px;max-width:340px;z-index:5}
 .tip b{font-weight:600}
 .tip .r{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.tip .r span:first-child{display:flex;gap:6px;align-items:center;color:var(--muted)}
+.tip .r > span:first-child{display:flex;gap:6px;align-items:center;color:var(--muted);min-width:0}
+.tip .r > .num{white-space:nowrap;flex:none}
 .tip .t{font-size:11px;color:var(--muted);margin-bottom:4px}
 .tip .flag{color:var(--warn);font-size:11px;margin-top:4px}
 .empty{padding:40px 0;text-align:center;color:var(--muted)}
@@ -235,6 +236,7 @@ function writeUrl(){
 // ---------- controls ----------
 const regionSel = $('region'), tikSel = $('tik'), tikq = $('tikq');
 regionSel.innerHTML = '<option value="-1">Все области</option>' + D.regions.map((r, i) => `<option value="${i}">${esc(r)}</option>`).join('');
+function shortName(n){ if (!n) return ''; const [last, ...rest] = n.split(' '); return [last, ...rest.map(w => w[0] + '.')].join(' '); }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 function matchingTiks(){
@@ -447,14 +449,13 @@ function drawHover(){
     g.beginPath(); g.arc(x, geo.Y(v), 4.5, 0, Math.PI * 2); g.fill(); g.stroke(); }
   const f = C.f[r], flags = [];
   if (f & 1) flags.push('ДЭГ'); if (f & 2) flags.push('повторный протокол'); if (f & 4) flags.push('источник: не ЦИК API');
-  const row = (s, val, extra) => `<div class="r"><span><i class="sw" style="background:var(${s.color})"></i>${s.label}</span><span class="num">${val}${extra ? ` <span style="color:var(--faint)">${extra}</span>` : ''}</span></div>`;
+  const row = (s, val, extra, who) => `<div class="r"><span><i class="sw" style="background:var(${s.color})"></i><span>${who ? `${s.label.replace(', кандидат', '')} · <b style="color:var(--ink);font-weight:500">${esc(who)}</b>` : s.label}</span></span><span class="num">${val}${extra ? ` <span style="color:var(--faint)">${extra}</span>` : ''}</span></div>`;
   tip.innerHTML = `<div class="t">${esc(D.regions[tikRegion[C.t[r]]])} · ${esc(tikName[C.t[r]])}</div>
     <div class="r" style="margin-bottom:4px"><b>УИК №${C.u[r]}</b><span class="num" style="color:var(--muted)">${fmtInt(C.v[r])} изб.</span></div>
-    ${row(SERIES[0], fmtPct(C.pwp[r]) + '%', C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '')}
+    ${row(SERIES[0], fmtPct(C.pwp[r]) + '%', C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '', shortName(D.names[C.nw[r]]) || '—')}
     ${row(SERIES[1], fmtPct(C.erp[r]) + '%', C.er[r] >= 0 ? fmtInt(C.er[r]) : '')}
-    ${row(SERIES[2], D.names[C.nk[r]] ? fmtPct(C.pkp[r]) + '%' : 'нет', C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '')}
+    ${row(SERIES[2], D.names[C.nk[r]] ? fmtPct(C.pkp[r]) + '%' : 'нет', C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '', shortName(D.names[C.nk[r]]) || 'нет кандидата')}
     ${row(SERIES[3], fmtPct(C.tp[r]) + '%', C.i[r] >= 0 ? fmtInt(C.i[r]) : '')}
-    <div class="t" style="margin:6px 0 0">ЕР: ${esc(D.names[C.nw[r]] || '—')}<br>pick: ${esc(D.names[C.nk[r]] || '—')}</div>
     ${flags.length ? `<div class="flag">${flags.join(' · ')}</div>` : ''}`;
   tip.hidden = false;
   const tw = tip.offsetWidth, th = tip.offsetHeight;
