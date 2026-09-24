@@ -31,6 +31,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14p
 header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px}
 h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
 .sub{color:var(--muted);font-size:13px}
+.sub a{color:var(--c-pw);text-underline-offset:3px}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 .filters{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px 18px;align-items:end}
@@ -107,7 +108,7 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
 <div class="wrap">
   <header>
     <h1>Протоколы УИК</h1>
-    <div class="sub" id="meta"></div>
+    <div class="sub"><span id="meta"></span> · данные: <a href="https://deg.zhizhin.xyz/shpilkin.html" target="_blank" rel="noopener">deg.zhizhin.xyz/shpilkin.html</a></div>
   </header>
 
   <section class="filters" aria-label="Фильтры">
