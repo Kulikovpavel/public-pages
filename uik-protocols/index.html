@@ -191,8 +191,45 @@ const fmtShare = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + 
 const DEFAULT = {region:0, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', hideDeg:false, mode:'pct', size:'fixed', show:{pw:true, er:true, pk:true, tp:false}};
 let S = structuredClone(DEFAULT);
 try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show)}); } catch (e) {}
+readUrl();
 if (S.tik === null) S.tik = D.tiks.findIndex(t => t[0] === S.region);
-const save = () => { try { localStorage.setItem('uik-state', JSON.stringify(S)); } catch (e) {} };
+const save = () => { try { localStorage.setItem('uik-state', JSON.stringify(S)); } catch (e) {} writeUrl(); };
+
+function readUrl(){
+  let p;
+  try { p = new URLSearchParams(location.search); } catch (e) { return; }
+  if (![...p.keys()].length) return;
+  S = Object.assign(structuredClone(DEFAULT), {mode:S.mode, size:S.size, show:S.show});
+  const region = p.get('region');
+  S.region = region ? D.regions.indexOf(region) : -1;
+  const tik = p.get('tik');
+  S.tik = tik ? D.tiks.findIndex((t, i) => t[1] === tik && (S.region < 0 || t[0] === S.region)) : -1;
+  if (S.tik >= 0) S.region = tikRegion[S.tik];
+  S.tikq = p.get('q') || '';
+  for (const [key, lo, hi] of [['pw', 'pwMin', 'pwMax'], ['pk', 'pkMin', 'pkMax']]) {
+    const m = (p.get(key) || '').match(/^\s*(\d+(?:[.,]\d+)?)?\s*-\s*(\d+(?:[.,]\d+)?)?\s*$/);
+    if (m) { S[lo] = (m[1] || '').replace(',', '.'); S[hi] = (m[2] || '').replace(',', '.'); }
+  }
+  S.hideDeg = p.get('nodeg') === '1';
+  if (p.has('scale')) S.mode = p.get('scale') === 'votes' ? 'votes' : 'pct';
+  if (p.has('size')) S.size = p.get('size') === 'votes' ? 'votes' : 'fixed';
+  if (p.has('show')) { const on = p.get('show').split(','); S.show = Object.fromEntries(SERIES.map(s => [s.id, on.includes(s.id)])); }
+}
+function writeUrl(){
+  const p = new URLSearchParams();
+  if (S.region >= 0) p.set('region', D.regions[S.region]);
+  if (S.tik >= 0) p.set('tik', tikName[S.tik]);
+  if (S.tikq.trim()) p.set('q', S.tikq.trim());
+  if (S.pwMin !== '' || S.pwMax !== '') p.set('pw', `${S.pwMin}-${S.pwMax}`);
+  if (S.pkMin !== '' || S.pkMax !== '') p.set('pk', `${S.pkMin}-${S.pkMax}`);
+  if (S.hideDeg) p.set('nodeg', '1');
+  if (S.mode === 'votes') p.set('scale', 'votes');
+  if (S.size === 'votes') p.set('size', 'votes');
+  const shown = SERIES.filter(s => S.show[s.id]).map(s => s.id).join(',');
+  if (shown !== 'pw,er,pk') p.set('show', shown);
+  const qs = p.toString();
+  try { history.replaceState(null, '', qs ? '?' + qs : location.pathname); } catch (e) {}
+}
 
 // ---------- controls ----------
 const regionSel = $('region'), tikSel = $('tik'), tikq = $('tikq');
