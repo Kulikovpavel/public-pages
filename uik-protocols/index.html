@@ -32,6 +32,9 @@ header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-be
 h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
 .sub{color:var(--muted);font-size:13px}
 .sub a{color:var(--c-pw);text-underline-offset:3px}
+.lblrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lblrow label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lblrow a{font-size:12px;color:var(--c-pw);text-underline-offset:3px;white-space:nowrap}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 .filters{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px 18px;align-items:end}
@@ -118,7 +121,7 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
       <select id="region"></select>
     </div>
     <div class="f">
-      <label for="district">Округ</label>
+      <div class="lblrow"><label for="district">Округ</label><a id="districtLink" href="#" target="_blank" rel="noopener" hidden></a></div>
       <select id="district"></select>
     </div>
     <div class="f wide">
@@ -262,6 +265,9 @@ function fillDistrictSelect(){
     return `<option value="${d}">№${d} · ${esc(shortName(x.pw) || '—')}${x.pk ? ' / ' + esc(shortName(x.pk)) : ''}${S.region < 0 ? ' — ' + esc(D.regions[x.region]) : ''}</option>`;
   }).join('');
   districtSel.value = String(S.district);
+  const link = $('districtLink');
+  link.hidden = S.district < 0;
+  if (S.district >= 0) { link.href = `https://iditena.ru/districts/${S.district}/`; link.textContent = `№${S.district} на iditena.ru ↗`; }
 }
 const tikDistrictLabel = tikDistricts.map(ds => [...ds].sort((a, b) => a - b).join(', '));
 function searchMatch(){
