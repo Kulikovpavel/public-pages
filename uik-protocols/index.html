@@ -120,7 +120,7 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
     <div class="f wide">
       <label for="tikq">ТИК</label>
       <div class="tikrow">
-        <input type="text" id="tikq" placeholder="Поиск по названию" autocomplete="off">
+        <input type="text" id="tikq" placeholder="Название, № округа или фамилия" autocomplete="off">
         <select id="tik"></select>
       </div>
     </div>
@@ -239,12 +239,28 @@ regionSel.innerHTML = '<option value="-1">Все области</option>' + D.re
 function shortName(n){ if (!n) return ''; const [last, ...rest] = n.split(' '); return [last, ...rest.map(w => w[0] + '.')].join(' '); }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-function matchingTiks(){
-  const q = S.tikq.trim().toLowerCase();
+const tikDistricts = D.tiks.map(() => new Set()), districtNames = new Map();
+for (let i = 0; i < N; i++) {
+  tikDistricts[C.t[i]].add(C.d[i]);
+  if (!districtNames.has(C.d[i])) districtNames.set(C.d[i], [D.names[C.nw[i]], D.names[C.nk[i]]].join(' ').toLowerCase());
+}
+const tikDistrictLabel = tikDistricts.map(ds => [...ds].sort((a, b) => a - b).join(', '));
+function searchMatch(){
+  const q = S.tikq.trim().toLowerCase().replace(/^№\s*/, '');
+  if (!q) return null;
+  const num = /^\d+$/.test(q) ? +q : null;
+  const districts = new Set();
+  for (const [d, names] of districtNames) if (d === num || (num === null && names.includes(q))) districts.add(d);
+  const byName = new Set();
+  const numInName = num === null ? null : new RegExp(`(^|\\D)${num}(\\D|$)`);
+  for (let i = 0; i < D.tiks.length; i++) if (numInName ? numInName.test(tikLower[i]) : tikLower[i].includes(q)) byName.add(i);
+  return {byName, districts};
+}
+function matchingTiks(m = searchMatch()){
   const out = [];
   for (let i = 0; i < D.tiks.length; i++) {
     if (S.region >= 0 && tikRegion[i] !== S.region) continue;
-    if (q && !tikLower[i].includes(q)) continue;
+    if (m && !m.byName.has(i) && ![...tikDistricts[i]].some(d => m.districts.has(d))) continue;
     out.push(i);
   }
   return out;
@@ -254,7 +270,7 @@ function fillTikSelect(){
   if (S.tik >= 0 && !list.includes(S.tik)) S.tik = -1;
   const allLabel = S.tikq.trim() ? `Все найденные ТИК (${list.length})` : `Все ТИК (${list.length})`;
   tikSel.innerHTML = `<option value="-1">${allLabel}</option>` + list.map(i =>
-    `<option value="${i}">${esc(tikName[i])}${S.region < 0 ? ' — ' + esc(D.regions[tikRegion[i]]) : ''}</option>`).join('');
+    `<option value="${i}">${esc(tikName[i])} · окр. ${tikDistrictLabel[i]}${S.region < 0 ? ' — ' + esc(D.regions[tikRegion[i]]) : ''}</option>`).join('');
   tikSel.value = String(S.tik);
 }
 function syncControls(){
@@ -286,13 +302,15 @@ $('sizeVotes').onclick = () => { S.size = 'votes'; syncControls(); save(); draw(
 let sel = [], groups = [], groupBy = null;
 function bound(v){ if (v === '' || v === null || isNaN(+v)) return null; return Math.round(+v * 100); }
 function select(){
-  const tikSet = S.tik >= 0 ? null : new Set(matchingTiks());
+  const m = S.tik >= 0 ? null : searchMatch();
+  const tikSet = S.tik >= 0 ? null : new Set(matchingTiks(m));
   const pwLo = bound(S.pwMin), pwHi = bound(S.pwMax), pkLo = bound(S.pkMin), pkHi = bound(S.pkMax);
   const pwOn = pwLo !== null || pwHi !== null, pkOn = pkLo !== null || pkHi !== null;
   const out = [];
   for (let i = 0; i < N; i++) {
     const t = C.t[i];
     if (S.tik >= 0 ? t !== S.tik : !tikSet.has(t)) continue;
+    if (m && !m.byName.has(t) && !m.districts.has(C.d[i])) continue;
     if (S.hideDeg && (C.f[i] & 1)) continue;
     if (pwOn) { const v = C.pwp[i]; if (v < 0 || (pwLo !== null && v < pwLo) || (pwHi !== null && v > pwHi)) continue; }
     if (pkOn) { const v = C.pkp[i]; if (v < 0 || (pkLo !== null && v < pkLo) || (pkHi !== null && v > pkHi)) continue; }
@@ -344,7 +362,8 @@ function candidateNames(){
   const pairs = new Map();
   for (const r of sel) pairs.set(C.d[r], [C.nw[r], C.nk[r]]);
   if (pairs.size === 1) { const [w, k] = [...pairs.values()][0]; return {pw:D.names[w] || '—', pk:D.names[k] || 'нет кандидата', d:[...pairs.keys()][0]}; }
-  return {pw:`${pairs.size} округов`, pk:`${pairs.size} округов`, d:null};
+  const n = pairs.size, word = n % 10 === 1 && n % 100 !== 11 ? 'округ' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'округа' : 'округов';
+  return {pw:`${n} ${word}`, pk:`${n} ${word}`, d:null};
 }
 function renderStats(){
   const a = agg(sel), nm = sel.length ? candidateNames() : {pw:'', pk:''};
