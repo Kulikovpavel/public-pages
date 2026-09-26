@@ -236,7 +236,6 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
 
 <script>
 const D = /*DATA*/null;
-const FED_VERSION = '/*FED_VERSION*/';
 const C = D.cols, N = C.t.length;
 const tikRegion = D.tiks.map(t => t[0]), tikName = D.tiks.map(t => t[1]);
 const tikLower = tikName.map(s => s.toLowerCase());
@@ -336,19 +335,10 @@ function applyDenom(){
     C.bw[i] = bw; C.be[i] = be;
     C.pwp[i] = bp(C.pw[i], bw); C.pkp[i] = bp(C.pk[i], bw); C.erp[i] = bp(C.er[i], be);
   }
-  if (fedLoaded) for (let k = 0; k < PARTIES.length; k++) {
-    const votes = C['p' + k], pct = C['p' + k + 'p'];
+  for (let k = 0; k < PARTIES.length; k++) {
+    const votes = C['p' + k], pct = C['p' + k + 'p'] || (C['p' + k + 'p'] = new Array(N));
     for (let i = 0; i < N; i++) pct[i] = bp(votes[i], C.be[i]);
   }
-}
-let fedLoaded = false, fedLoading = null;
-function loadFed(){
-  if (!fedLoading) fedLoading = fetch(`fed.json?v=${FED_VERSION}`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(j => {
-    j.p.forEach((arr, k) => { C['p' + k] = arr; C['p' + k + 'p'] = new Array(N); });
-    fedLoaded = true; applyDenom();
-  });
-  fedLoading.catch(() => { fedLoading = null; });
-  return fedLoading;
 }
 applyDenom();
 
@@ -436,12 +426,6 @@ function setBallot(b){
   S.ballot = b;
   $('ballotSm').setAttribute('aria-pressed', b === 'sm');
   $('ballotFed').setAttribute('aria-pressed', b === 'fed');
-  if (b === 'fed' && !fedLoaded) {
-    $('ballotFed').textContent = 'Федеральный список — загрузка…';
-    loadFed().then(() => { $('ballotFed').textContent = 'Федеральный список'; if (S.ballot === 'fed') setBallot('fed'); },
-      () => { $('ballotFed').textContent = 'Федеральный список — не загрузился, нажмите ещё раз'; S.ballot = 'sm'; setBallot('sm'); });
-    return;
-  }
   SERIES = b === 'fed' ? FED_SERIES : SM_SERIES;
   syncControls(); update();
 }
@@ -805,10 +789,7 @@ function update(){
 new ResizeObserver(() => draw()).observe(box);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw());
 new MutationObserver(() => draw()).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
-const wantFed = S.ballot === 'fed';
-S.ballot = 'sm';
-syncControls(); update();
-if (wantFed) setBallot('fed');
+setBallot(S.ballot);
 if (pendingUik) {
   const r = sel.find(i => C.u[i] === pendingUik);
   if (r !== undefined) {

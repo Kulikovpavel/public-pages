@@ -54,21 +54,18 @@ for r in rows:
     cols['d'].append(int(r['district']))
     cols['nw'].append(nidx[r['power_name']])
     cols['nk'].append(nidx[r['pick_name']])
+for k in range(len(PARTY_KEYS)):
+    cols[f'p{k}'] = [party_votes[r['uuid']][k] if r['uuid'] in party_votes else -1 for r in rows]
 data = {'regions': regions, 'tiks': [[ridx[a], b] for a, b in tiks], 'names': names, 'cols': cols}
 js = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
-fed = {'p': [[party_votes[r['uuid']][k] if r['uuid'] in party_votes else -1 for r in rows] for k in range(len(PARTY_KEYS))]}
-fed_js = json.dumps(fed, separators=(',', ':'))
-open(os.path.join(SITE, 'fed.json'), 'w', encoding='utf-8').write(fed_js)
 import hashlib
-fed_version = hashlib.sha1(fed_js.encode()).hexdigest()[:10]
 detail_dir = os.path.join(SITE, 'detail')
 digest = hashlib.sha1()
 for name in sorted(os.listdir(detail_dir)):
     digest.update(open(os.path.join(detail_dir, name), 'rb').read())
 out = (open(os.path.join(HERE, 'template.html'), encoding='utf-8').read()
        .replace('/*DATA*/null', js)
-       .replace('/*DETAIL_VERSION*/', digest.hexdigest()[:10])
-       .replace('/*FED_VERSION*/', fed_version))
+       .replace('/*DETAIL_VERSION*/', digest.hexdigest()[:10]))
 title = re.match(r'<title>[^<]*</title>', out).group(0)
 page = ('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         + title + '</head><body style="margin:0">' + out[len(title):] + '</body></html>')
