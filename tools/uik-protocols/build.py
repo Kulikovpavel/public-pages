@@ -50,7 +50,14 @@ for r in rows:
     cols['nk'].append(nidx[r['pick_name']])
 data = {'regions': regions, 'tiks': [[ridx[a], b] for a, b in tiks], 'names': names, 'cols': cols}
 js = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
-out = open(os.path.join(HERE, 'template.html'), encoding='utf-8').read().replace('/*DATA*/null', js)
+import hashlib
+detail_dir = os.path.join(SITE, 'detail')
+digest = hashlib.sha1()
+for name in sorted(os.listdir(detail_dir)):
+    digest.update(open(os.path.join(detail_dir, name), 'rb').read())
+out = (open(os.path.join(HERE, 'template.html'), encoding='utf-8').read()
+       .replace('/*DATA*/null', js)
+       .replace('/*DETAIL_VERSION*/', digest.hexdigest()[:10]))
 title = re.match(r'<title>[^<]*</title>', out).group(0)
 page = ('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         + title + '</head><body style="margin:0">' + out[len(title):] + '</body></html>')
