@@ -1,7 +1,15 @@
 import csv, gzip, io, json, os, re
 HERE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(HERE, '..', '..', 'uik-protocols')
-rows = list(csv.DictReader(io.TextIOWrapper(gzip.open(os.path.join(HERE, 'src', 'uik_protocols.csv.gz')), encoding='utf-8')))
+def read(name):
+    return csv.DictReader(io.TextIOWrapper(gzip.open(os.path.join(HERE, 'src', name)), encoding='utf-8'))
+
+rows = list(read('uik_protocols.csv.gz'))
+single_participants = {}
+for r in read('uik_single_mandate_full.csv.gz'):
+    if r['is_candidate'] != '1' and r['line'] in ('9', '10'):
+        single_participants[r['uuid']] = single_participants.get(r['uuid'], 0) + int(r['value'] or 0)
+federal_participants = {r['uuid']: int(r['invalid'] or 0) + int(r['valid'] or 0) for r in read('uik_federal_parties.csv.gz')}
 by_district = {r['district']: r['region'] for r in rows if r['region'] not in ('', 'None')}
 for r in rows:
     if r['region'] in ('', 'None'):
@@ -15,7 +23,7 @@ nidx = {n: i for i, n in enumerate(names)}
 rows.sort(key=lambda r: (tidx[(r['region'], r['tik'])], int(r['uik'])))
 def num(v): return int(v) if v != '' else -1
 def pct(v): return round(float(v) * 100) if v != '' else -1
-cols = {k: [] for k in 't u v i va fv tp pw pwp pk pkp er erp f d nw nk'.split()}
+cols = {k: [] for k in 't u v i va fv sp fp tp pw pwp pk pkp er erp f d nw nk'.split()}
 for r in rows:
     cols['t'].append(tidx[(r['region'], r['tik'])])
     cols['u'].append(int(r['uik']))
@@ -23,6 +31,8 @@ for r in rows:
     cols['i'].append(num(r['issued']))
     cols['va'].append(num(r['valid']))
     cols['fv'].append(num(r['federal_valid']))
+    cols['sp'].append(single_participants.get(r['uuid'], -1))
+    cols['fp'].append(federal_participants.get(r['uuid'], -1))
     cols['tp'].append(pct(r['turnout_pct']))
     for name_key, votes_key, pct_key, vc, pc in (('power_name', 'power_votes', 'power_pct', 'pw', 'pwp'), ('pick_name', 'pick_votes', 'pick_pct', 'pk', 'pkp')):
         if r[name_key] and r[pct_key] == '' and num(r['valid']) > 0:

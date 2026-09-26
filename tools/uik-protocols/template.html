@@ -173,6 +173,14 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
       <div class="range"><input type="number" id="tpMin" min="0" max="100" step="1" placeholder="от 0" aria-label="Явка от"><span>–</span><input type="number" id="tpMax" min="0" max="100" step="1" placeholder="до 100" aria-label="Явка до"></div>
     </div>
     <div class="f">
+      <label for="denom">Процент от</label>
+      <select id="denom">
+        <option value="part">принявших участие</option>
+        <option value="valid">действительных бюллетеней</option>
+        <option value="list">числа избирателей в списке</option>
+      </select>
+    </div>
+    <div class="f">
       <div class="checks">
         <label><input type="checkbox" id="hideDeg"> Без ДЭГ</label>
         <button type="button" class="ghost" id="reset">Сбросить фильтры</button>
@@ -232,7 +240,7 @@ const fmtInt = n => n.toLocaleString('ru-RU');
 const fmtPct = bp => bp < 0 ? '—' : (bp / 100).toFixed(2).replace('.', ',');
 const fmtShare = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + '%' : '—';
 
-const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', show:{pw:true, er:true, pk:true, tp:false}};
+const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', denom:'part', show:{pw:true, er:true, pk:true, tp:false}};
 let S = structuredClone(DEFAULT);
 let openRow = -1, openPos = -1, pendingUik = 0;
 try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show)}); } catch (e) {}
@@ -261,6 +269,7 @@ function readUrl(){
   S.hideDeg = p.get('nodeg') === '1';
   pendingUik = +p.get('uik') || 0;
   if (p.has('scale')) S.mode = p.get('scale') === 'votes' ? 'votes' : 'pct';
+  if (p.has('base')) S.denom = ['valid', 'list'].includes(p.get('base')) ? p.get('base') : 'part';
   if (p.has('size')) S.size = p.get('size') === 'votes' ? 'votes' : 'fixed';
   if (p.has('show')) { const on = p.get('show').split(','); S.show = Object.fromEntries(SERIES.map(s => [s.id, on.includes(s.id)])); }
 }
@@ -280,11 +289,30 @@ function writeUrl(){
   }
   if (S.mode === 'votes') p.set('scale', 'votes');
   if (S.size === 'votes') p.set('size', 'votes');
+  if (S.denom !== 'part') p.set('base', S.denom);
   const shown = SERIES.filter(s => S.show[s.id]).map(s => s.id).join(',');
   if (shown !== 'pw,er,pk') p.set('show', shown);
   const qs = p.toString();
   try { history.replaceState(null, '', qs ? '?' + qs : location.pathname); } catch (e) {}
 }
+
+// ---------- percentages ----------
+C.bw = new Array(N); C.be = new Array(N);
+const DENOM = {
+  part:{w:'sp', e:'fp', label:'от принявших участие (действительные + недействительные)'},
+  valid:{w:'va', e:'fv', label:'от действительных бюллетеней'},
+  list:{w:'v', e:'v', label:'от числа избирателей в списке'},
+};
+function applyDenom(){
+  const d = DENOM[S.denom] || DENOM.part;
+  const bp = (votes, base) => votes >= 0 && base > 0 ? Math.round(votes / base * 10000) : -1;
+  for (let i = 0; i < N; i++) {
+    const bw = C[d.w][i], be = C[d.e][i];
+    C.bw[i] = bw; C.be[i] = be;
+    C.pwp[i] = bp(C.pw[i], bw); C.pkp[i] = bp(C.pk[i], bw); C.erp[i] = bp(C.er[i], be);
+  }
+}
+applyDenom();
 
 // ---------- controls ----------
 const regionSel = $('region'), districtSel = $('district'), tikSel = $('tik'), tikq = $('tikq');
@@ -345,6 +373,7 @@ function syncControls(){
   fillTikSelect();
   for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).value = S[k];
   $('hideDeg').checked = S.hideDeg;
+  $('denom').value = S.denom;
   $('modePct').setAttribute('aria-pressed', S.mode === 'pct');
   $('modeVotes').setAttribute('aria-pressed', S.mode === 'votes');
   $('sizeFixed').setAttribute('aria-pressed', S.size === 'fixed');
@@ -358,6 +387,7 @@ tikq.oninput = () => { S.tikq = tikq.value; fillTikSelect(); update(); };
 tikSel.onchange = () => { S.tik = +tikSel.value; if (S.tik >= 0 && S.region < 0) { S.region = tikRegion[S.tik]; syncControls(); } update(); };
 for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).oninput = e => { S[k] = e.target.value; update(); };
 $('hideDeg').onchange = e => { S.hideDeg = e.target.checked; update(); };
+$('denom').onchange = e => { S.denom = e.target.value; applyDenom(); update(); if (openRow >= 0) openUik(openRow); };
 $('reset').onclick = () => { Object.assign(S, {tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false}); syncControls(); update(); };
 $('legend').onclick = e => { const b = e.target.closest('button'); if (!b) return; S.show[b.dataset.s] = !S.show[b.dataset.s]; b.setAttribute('aria-pressed', S.show[b.dataset.s]); save(); draw(); renderTable(); };
 $('modePct').onclick = () => { S.mode = 'pct'; syncControls(); save(); draw(); };
@@ -403,9 +433,9 @@ function agg(rows){
   const a = {n:rows.length, v:0, i:0, pw:0, pwb:0, pk:0, pkb:0, er:0, erb:0, deg:0};
   for (const r of rows) {
     if (C.v[r] > 0 && C.i[r] >= 0) { a.v += C.v[r]; a.i += C.i[r]; }
-    if (C.pwp[r] >= 0 && C.va[r] > 0) { a.pw += C.pw[r]; a.pwb += C.va[r]; }
-    if (C.pkp[r] >= 0 && C.va[r] > 0) { a.pk += C.pk[r]; a.pkb += C.va[r]; }
-    if (C.erp[r] >= 0 && C.fv[r] > 0) { a.er += C.er[r]; a.erb += C.fv[r]; }
+    if (C.pwp[r] >= 0) { a.pw += C.pw[r]; a.pwb += C.bw[r]; }
+    if (C.pkp[r] >= 0) { a.pk += C.pk[r]; a.pkb += C.bw[r]; }
+    if (C.erp[r] >= 0) { a.er += C.er[r]; a.erb += C.be[r]; }
     if (C.f[r] & 1) a.deg++;
   }
   return a;
@@ -520,7 +550,8 @@ function draw(){
     }
     g.globalAlpha = 1;
   }
-  const sizeNote = S.size === 'votes' ? ' Площадь точки — число действительных бюллетеней на участке (ДЭГ — максимальный размер).' : '';
+  const denomNote = S.mode === 'pct' ? ` Процент ${DENOM[S.denom].label}.` : '';
+  const sizeNote = denomNote + (S.size === 'votes' ? ' Площадь точки — число действительных бюллетеней на участке (ДЭГ — максимальный размер).' : '');
   $('hint').textContent = groupBy
     ? `Участки идут подряд внутри каждой ${groupBy === 'region' ? 'области' : 'ТИК'}, по возрастанию номера. Клик по полосе — перейти ${groupBy === 'region' ? 'в область' : 'в ТИК'}.` + sizeNote
     : `Участки по возрастанию номера. Наведите на точку, чтобы увидеть результаты, клик — полный протокол участка.` + sizeNote;
@@ -659,14 +690,16 @@ function renderCard(r, det, err){
   else if (!u) body = '<p class="hint">Полного протокола этого участка в данных нет.</p>';
   else {
     const [l, votes, fed] = u;
+    const baseSingle = S.denom === 'valid' ? l[9] : S.denom === 'list' ? l[0] : l[8] + l[9];
+    const baseFed = !fed ? 0 : S.denom === 'valid' ? fed[1] : S.denom === 'list' ? C.v[r] : fed[0] + fed[1];
     const cands = det.cands.map(([name, party, fl], i) => ({
       name, v:votes[i],
       note:[esc(party), fl & 1 ? '<em>кандидат власти</em>' : '', fl & 2 ? '<em>pick</em>' : ''].filter(Boolean).join(' · '),
       color:fl & 1 ? '--c-pw' : fl & 2 ? '--c-pk' : '--faint'}));
     const parties = fed ? PARTIES.map((name, i) => ({name, v:fed[2 + i], color:name === 'Единая Россия' ? '--c-er' : '--faint'})) : null;
     body = `<div class="card-grid">
-      <div><h3>Одномандатный округ №${d}</h3>${resultRows(cands, l[9])}<div class="foot">Процент — от действительных бюллетеней (${fmtInt(l[9])})</div></div>
-      <div><h3>Федеральный список</h3>${parties ? resultRows(parties, fed[1]) + `<div class="foot">Действительных ${fmtInt(fed[1])} · недействительных ${fmtInt(fed[0])}</div>` : '<p class="hint">Федерального протокола этого участка в данных нет.</p>'}</div>
+      <div><h3>Одномандатный округ №${d}</h3>${resultRows(cands, baseSingle)}<div class="foot">Процент ${DENOM[S.denom].label}: ${fmtInt(baseSingle)}</div></div>
+      <div><h3>Федеральный список</h3>${parties ? resultRows(parties, baseFed) + `<div class="foot">Процент ${DENOM[S.denom].label}: ${fmtInt(baseFed)} · действительных ${fmtInt(fed[1])}, недействительных ${fmtInt(fed[0])}</div>` : '<p class="hint">Федерального протокола этого участка в данных нет.</p>'}</div>
       <div><h3>Протокол, одномандатный бюллетень</h3><dl class="proto">${LINES.map((name, i) => `<dt>${i + 1}</dt><span>${name}</span><dd>${fmtInt(l[i])}</dd>`).join('')}</dl></div>
     </div>`;
   }
