@@ -6,9 +6,11 @@ os.makedirs(OUT, exist_ok=True)
 def rows(name):
     return csv.DictReader(io.TextIOWrapper(gzip.open(os.path.join(HERE, 'src', name)), encoding='utf-8'))
 
-fed_reader = rows('uik_federal_parties.csv.gz')
-party_cols = fed_reader.fieldnames[10:]
-fed = {r['uuid']: [int(r['invalid'] or 0), int(r['valid'] or 0)] + [int(r[p] or 0) for p in party_cols] for r in fed_reader}
+PARTY_KEYS = ['РОДИНА', 'ЕДИНАЯ РОССИЯ', 'КПРФ', 'ПЕНСИОНЕРОВ', 'НОВЫЕ ЛЮДИ', 'прямой демократии', 'ЗЕЛЁНЫЕ', 'КОММУНИСТЫ РОССИИ', 'ЛДПР', 'СПРАВЕДЛИВАЯ РОССИЯ']
+fed_reader = rows('uik_federal_full.csv.gz')
+line_cols = [c for c in fed_reader.fieldnames if c[:1] == 'l' and c[1:3].isdigit()]
+party_cols = [next(c for c in fed_reader.fieldnames if key in c) for key in PARTY_KEYS]
+fed = {r['uuid']: [int(r[c] or 0) for c in line_cols + party_cols] for r in fed_reader}
 
 districts = {}
 for r in rows('uik_single_mandate_full.csv.gz'):
@@ -36,5 +38,5 @@ for num, d in districts.items():
     sizes.append((os.path.getsize(path), num))
 sizes.sort()
 print('files', len(sizes), 'total MB', round(sum(s for s, _ in sizes) / 1e6, 2), 'min', sizes[0], 'median', sizes[len(sizes) // 2], 'max', sizes[-1])
-print('parties', party_cols)
+print('lines', len(line_cols), 'parties', party_cols)
 print('uiks without federal', sum(1 for d in districts.values() for u in d['uiks'].values() if u['uuid'] not in fed))

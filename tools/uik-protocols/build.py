@@ -9,7 +9,7 @@ single_participants = {}
 for r in read('uik_single_mandate_full.csv.gz'):
     if r['is_candidate'] != '1' and r['line'] in ('9', '10'):
         single_participants[r['uuid']] = single_participants.get(r['uuid'], 0) + int(r['value'] or 0)
-federal_participants = {r['uuid']: int(r['invalid'] or 0) + int(r['valid'] or 0) for r in read('uik_federal_parties.csv.gz')}
+federal_participants = {r['uuid']: int(r['l09_invalid'] or 0) + int(r['l10_valid'] or 0) for r in read('uik_federal_full.csv.gz')}
 by_district = {r['district']: r['region'] for r in rows if r['region'] not in ('', 'None')}
 for r in rows:
     if r['region'] in ('', 'None'):
