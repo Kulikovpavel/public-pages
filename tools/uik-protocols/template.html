@@ -1,0 +1,715 @@
+<title>Протоколы УИК</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#18202e; --muted:#5b6475; --faint:#8a92a3;
+  --line:#dde2ea; --line-soft:#eceff4; --hover:#eef2f8; --focus:#2554c7;
+  --c-pw:#2554c7; --c-er:#7f9be0; --c-pk:#d9661a; --c-tp:#7a52b8;
+  --warn:#b4541a;
+  --font:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#10141b; --surface:#171d27; --ink:#e4e8ef; --muted:#9aa3b4; --faint:#6d7688;
+    --line:#2a3240; --line-soft:#212835; --hover:#1f2735; --focus:#7ea0ff;
+    --c-pw:#6e93ff; --c-er:#a6b9ee; --c-pk:#ff9447; --c-tp:#b691ec; --warn:#f0a068;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#10141b; --surface:#171d27; --ink:#e4e8ef; --muted:#9aa3b4; --faint:#6d7688;
+  --line:#2a3240; --line-soft:#212835; --hover:#1f2735; --focus:#7ea0ff;
+  --c-pw:#6e93ff; --c-er:#a6b9ee; --c-pk:#ff9447; --c-tp:#b691ec; --warn:#f0a068;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
+.wrap{max-width:1400px;margin:0 auto;padding-inline:20px;padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px}
+h1{font-size:22px;font-weight:700;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--muted);font-size:13px}
+.sub a{color:var(--c-pw);text-underline-offset:3px}
+.lblrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.lblrow label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lblrow a{font-size:12px;color:var(--c-pw);text-underline-offset:3px;white-space:nowrap}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+.filters{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px 18px;align-items:end}
+.f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.f > label,.f > .lbl{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:6px}
+.f.wide{grid-column:span 2}
+@media (max-width:560px){.f.wide{grid-column:auto}}
+select,input[type=text],input[type=number]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:7px 9px;width:100%;min-width:0}
+input[type=number]{font-family:var(--mono);font-size:13px}
+select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.tikrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:6px}
+@media (max-width:560px){.tikrow{grid-template-columns:1fr}}
+.range{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;color:var(--faint)}
+.sw{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.checks{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding-block:6px}
+.checks label{display:flex;gap:6px;align-items:center;cursor:pointer}
+button{font:inherit;cursor:pointer;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:6px 11px}
+button:hover{background:var(--hover)}
+.ghost{border-color:transparent;color:var(--muted);background:transparent}
+
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:13px;color:var(--muted)}
+.crumbs button{padding:2px 6px;border:none;background:none;color:var(--c-pw);text-decoration:underline;text-underline-offset:3px}
+.crumbs .cur{color:var(--ink);font-weight:600}
+
+.stats{display:flex;flex-wrap:wrap;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stat{flex:1 1 130px;padding:10px 14px;border-right:1px solid var(--line-soft);display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat:last-child{border-right:none}
+.stat .k{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);display:flex;gap:6px;align-items:center}
+.stat .v{font-family:var(--mono);font-size:19px;font-weight:500;font-variant-numeric:tabular-nums}
+.stat .n{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.panel-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px}
+.panel-h h2{font-size:15px;font-weight:600;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px}
+.legend button{display:flex;align-items:center;gap:7px;padding:4px 10px;border-radius:99px;font-size:13px}
+.legend button[aria-pressed=false]{opacity:.45}
+.legend button[aria-pressed=false] .sw{background:transparent!important;box-shadow:inset 0 0 0 1.5px var(--faint)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:none;border-radius:0;padding:4px 10px;font-size:13px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.chartbox{position:relative;height:380px}
+.chartbox canvas{position:absolute;inset:0;width:100%;height:100%}
+.hint{font-size:12px;color:var(--faint)}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;box-shadow:0 6px 20px rgba(10,20,40,.14);min-width:240px;max-width:340px;z-index:5}
+.tip b{font-weight:600}
+.tip .r{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.tip .r > span:first-child{display:flex;gap:6px;align-items:center;color:var(--muted);min-width:0}
+.tip .r > .num{white-space:nowrap;flex:none}
+.tip .t{font-size:11px;color:var(--muted);margin-bottom:4px}
+.tip .flag{color:var(--warn);font-size:11px;margin-top:4px}
+.empty{padding:40px 0;text-align:center;color:var(--muted)}
+
+.tscroll{overflow-x:auto;border:1px solid var(--line-soft);border-radius:8px}
+table{border-collapse:collapse;font-size:12.5px}
+th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft)}
+.grid th{position:sticky;left:0;background:var(--surface);text-align:left;font-weight:500;color:var(--muted);z-index:1;border-right:1px solid var(--line)}
+.grid td{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;min-width:52px}
+.grid thead td{font-weight:600;color:var(--ink);background:var(--bg)}
+.grid td.hl{outline:2px solid var(--ink);outline-offset:-2px}
+.grid td.deg{color:var(--warn)}
+.groups{width:100%}
+.groups th{text-align:right;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;cursor:pointer;user-select:none;background:var(--bg)}
+.groups th:first-child,.groups td:first-child{text-align:left}
+.groups th[aria-sort]::after{content:" ↓"}
+.groups th[aria-sort=ascending]::after{content:" ↑"}
+.groups td{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.groups td:first-child{font-family:var(--font);white-space:normal;min-width:220px}
+.groups tbody tr{cursor:pointer}
+.groups tbody tr:hover{background:var(--hover)}
+.bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-left:6px;opacity:.85}
+#uikPanel{gap:14px}
+.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-h h2{font-size:18px;font-weight:700;margin:0}
+.card-h .sub a{color:var(--c-pw)}
+.card-close{font-size:18px;line-height:1;padding:4px 10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--hover);color:var(--muted)}
+.tag.warn{color:var(--warn)}
+.tag b{color:var(--ink);font-weight:600;font-family:var(--mono)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px 28px;align-items:start}
+.card-grid h3{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.res{width:100%;border-collapse:collapse;font-size:13px}
+.res td{padding:5px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;white-space:normal}
+.res td.v{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+.res td.v span{color:var(--faint)}
+.res .who{display:flex;flex-direction:column;gap:3px;min-width:0}
+.res .who small{color:var(--muted);font-size:11.5px}
+.res .who small em{font-style:normal;color:var(--ink);font-weight:600}
+.track{height:5px;border-radius:3px;background:var(--line-soft);overflow:hidden}
+.track i{display:block;height:100%;border-radius:3px}
+.foot{font-size:12px;color:var(--muted);margin-top:6px}
+.proto{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;font-size:13px;margin:0}
+.proto dt{color:var(--faint);font-family:var(--mono);font-size:11px;padding-top:2px}
+.proto dd{margin:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.proto span{color:var(--muted)}
+.grid thead td{cursor:pointer}
+.grid thead td:hover{text-decoration:underline}
+.grid td.open{box-shadow:inset 0 -2px 0 var(--ink)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Протоколы УИК</h1>
+    <div class="sub"><span id="meta"></span> · данные: <a href="https://deg.zhizhin.xyz/shpilkin.html" target="_blank" rel="noopener">deg.zhizhin.xyz/shpilkin.html</a></div>
+  </header>
+
+  <section class="filters" aria-label="Фильтры">
+    <div class="f">
+      <label for="region">Область</label>
+      <select id="region"></select>
+    </div>
+    <div class="f">
+      <div class="lblrow"><label for="district">Округ</label><a id="districtLink" href="#" target="_blank" rel="noopener" hidden></a></div>
+      <select id="district"></select>
+    </div>
+    <div class="f wide">
+      <label for="tikq">ТИК</label>
+      <div class="tikrow">
+        <input type="text" id="tikq" placeholder="Поиск по названию" autocomplete="off">
+        <select id="tik"></select>
+      </div>
+    </div>
+    <div class="f">
+      <span class="lbl"><i class="sw" style="background:var(--c-pw)"></i>ЕР, кандидат, %</span>
+      <div class="range"><input type="number" id="pwMin" min="0" max="100" step="1" placeholder="от 0" aria-label="ЕР кандидат от"><span>–</span><input type="number" id="pwMax" min="0" max="100" step="1" placeholder="до 100" aria-label="ЕР кандидат до"></div>
+    </div>
+    <div class="f">
+      <span class="lbl"><i class="sw" style="background:var(--c-pk)"></i>pick, %</span>
+      <div class="range"><input type="number" id="pkMin" min="0" max="100" step="1" placeholder="от 0" aria-label="pick от"><span>–</span><input type="number" id="pkMax" min="0" max="100" step="1" placeholder="до 100" aria-label="pick до"></div>
+    </div>
+    <div class="f">
+      <span class="lbl"><i class="sw" style="background:var(--c-tp)"></i>Явка, %</span>
+      <div class="range"><input type="number" id="tpMin" min="0" max="100" step="1" placeholder="от 0" aria-label="Явка от"><span>–</span><input type="number" id="tpMax" min="0" max="100" step="1" placeholder="до 100" aria-label="Явка до"></div>
+    </div>
+    <div class="f">
+      <div class="checks">
+        <label><input type="checkbox" id="hideDeg"> Без ДЭГ</label>
+        <button type="button" class="ghost" id="reset">Сбросить фильтры</button>
+      </div>
+    </div>
+  </section>
+
+  <nav class="crumbs" id="crumbs" aria-label="Уровень"></nav>
+  <section class="stats" id="stats" aria-label="Итоги по выборке"></section>
+
+  <section class="panel">
+    <div class="panel-h">
+      <h2 id="chartTitle">Результаты по участкам</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <div class="legend" id="legend"></div>
+        <div class="seg" role="group" aria-label="Шкала">
+          <button type="button" id="modePct" aria-pressed="true">%</button>
+          <button type="button" id="modeVotes" aria-pressed="false">голоса</button>
+        </div>
+        <div class="seg" role="group" aria-label="Размер точек">
+          <button type="button" id="sizeFixed" aria-pressed="true">точки</button>
+          <button type="button" id="sizeVotes" aria-pressed="false">размер по голосам</button>
+        </div>
+      </div>
+    </div>
+    <div class="chartbox" id="chartbox">
+      <canvas id="cv"></canvas><canvas id="ov"></canvas>
+      <div class="tip" id="tip" hidden></div>
+      <div class="empty" id="empty" hidden>Под фильтры не попал ни один участок — ослабьте диапазоны или сбросьте фильтры.</div>
+    </div>
+    <div class="hint" id="hint"></div>
+  </section>
+
+  <section class="panel" id="uikPanel" hidden aria-live="polite"></section>
+
+  <section class="panel" id="tablePanel">
+    <div class="panel-h"><h2 id="tableTitle"></h2><span class="hint" id="tableHint"></span></div>
+    <div class="tscroll" id="tableBox"></div>
+  </section>
+</div>
+
+<script>
+const D = /*DATA*/null;
+const C = D.cols, N = C.t.length;
+const tikRegion = D.tiks.map(t => t[0]), tikName = D.tiks.map(t => t[1]);
+const tikLower = tikName.map(s => s.toLowerCase());
+
+const SERIES = [
+  {id:'pw', label:'ЕР, кандидат', color:'--c-pw', pct:'pwp', votes:'pw', base:'va'},
+  {id:'er', label:'ЕР, список', color:'--c-er', pct:'erp', votes:'er', base:'fv'},
+  {id:'pk', label:'pick', color:'--c-pk', pct:'pkp', votes:'pk', base:'va'},
+  {id:'tp', label:'Явка', color:'--c-tp', pct:'tp', votes:'i', base:'v'},
+];
+
+const $ = id => document.getElementById(id);
+const fmtInt = n => n.toLocaleString('ru-RU');
+const fmtPct = bp => bp < 0 ? '—' : (bp / 100).toFixed(2).replace('.', ',');
+const fmtShare = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + '%' : '—';
+
+const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', show:{pw:true, er:true, pk:true, tp:false}};
+let S = structuredClone(DEFAULT);
+let openRow = -1, openPos = -1, pendingUik = 0;
+try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show)}); } catch (e) {}
+readUrl();
+if (S.tik === null) S.tik = D.tiks.findIndex(t => t[0] === S.region);
+const save = () => { try { localStorage.setItem('uik-state', JSON.stringify(S)); } catch (e) {} writeUrl(); };
+
+function readUrl(){
+  let p;
+  try { p = new URLSearchParams(location.search); } catch (e) { return; }
+  if (![...p.keys()].length) return;
+  S = Object.assign(structuredClone(DEFAULT), {mode:S.mode, size:S.size, show:S.show});
+  const region = p.get('region');
+  S.region = region ? D.regions.indexOf(region) : -1;
+  const okrug = +p.get('okrug');
+  const row = okrug ? C.d.indexOf(okrug) : -1;
+  if (row >= 0) { S.district = okrug; S.region = tikRegion[C.t[row]]; }
+  const tik = p.get('tik');
+  S.tik = tik ? D.tiks.findIndex((t, i) => t[1] === tik && (S.region < 0 || t[0] === S.region)) : -1;
+  if (S.tik >= 0) S.region = tikRegion[S.tik];
+  S.tikq = p.get('q') || '';
+  for (const [key, lo, hi] of [['pw', 'pwMin', 'pwMax'], ['pk', 'pkMin', 'pkMax'], ['tp', 'tpMin', 'tpMax']]) {
+    const m = (p.get(key) || '').match(/^\s*(\d+(?:[.,]\d+)?)?\s*-\s*(\d+(?:[.,]\d+)?)?\s*$/);
+    if (m) { S[lo] = (m[1] || '').replace(',', '.'); S[hi] = (m[2] || '').replace(',', '.'); }
+  }
+  S.hideDeg = p.get('nodeg') === '1';
+  pendingUik = +p.get('uik') || 0;
+  if (p.has('scale')) S.mode = p.get('scale') === 'votes' ? 'votes' : 'pct';
+  if (p.has('size')) S.size = p.get('size') === 'votes' ? 'votes' : 'fixed';
+  if (p.has('show')) { const on = p.get('show').split(','); S.show = Object.fromEntries(SERIES.map(s => [s.id, on.includes(s.id)])); }
+}
+function writeUrl(){
+  const p = new URLSearchParams();
+  if (S.region >= 0) p.set('region', D.regions[S.region]);
+  if (S.district >= 0) p.set('okrug', S.district);
+  if (S.tik >= 0) p.set('tik', tikName[S.tik]);
+  if (S.tikq.trim()) p.set('q', S.tikq.trim());
+  if (S.pwMin !== '' || S.pwMax !== '') p.set('pw', `${S.pwMin}-${S.pwMax}`);
+  if (S.pkMin !== '' || S.pkMax !== '') p.set('pk', `${S.pkMin}-${S.pkMax}`);
+  if (S.tpMin !== '' || S.tpMax !== '') p.set('tp', `${S.tpMin}-${S.tpMax}`);
+  if (S.hideDeg) p.set('nodeg', '1');
+  if (openRow >= 0) {
+    if (S.region < 0) p.set('region', D.regions[tikRegion[C.t[openRow]]]);
+    p.set('uik', C.u[openRow]);
+  }
+  if (S.mode === 'votes') p.set('scale', 'votes');
+  if (S.size === 'votes') p.set('size', 'votes');
+  const shown = SERIES.filter(s => S.show[s.id]).map(s => s.id).join(',');
+  if (shown !== 'pw,er,pk') p.set('show', shown);
+  const qs = p.toString();
+  try { history.replaceState(null, '', qs ? '?' + qs : location.pathname); } catch (e) {}
+}
+
+// ---------- controls ----------
+const regionSel = $('region'), districtSel = $('district'), tikSel = $('tik'), tikq = $('tikq');
+regionSel.innerHTML = '<option value="-1">Все области</option>' + D.regions.map((r, i) => `<option value="${i}">${esc(r)}</option>`).join('');
+function shortName(n){ if (!n) return ''; const [last, ...rest] = n.split(' '); return [last, ...rest.map(w => w[0] + '.')].join(' '); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+const tikDistricts = D.tiks.map(() => new Set());
+for (let i = 0; i < N; i++) {
+  tikDistricts[C.t[i]].add(C.d[i]);
+}
+const districtInfo = new Map();
+for (let i = 0; i < N; i++) if (!districtInfo.has(C.d[i])) districtInfo.set(C.d[i], {region:tikRegion[C.t[i]], pw:D.names[C.nw[i]], pk:D.names[C.nk[i]]});
+const districtNums = [...districtInfo.keys()].sort((a, b) => a - b);
+function fillDistrictSelect(){
+  const list = districtNums.filter(d => S.region < 0 || districtInfo.get(d).region === S.region);
+  if (S.district >= 0 && !list.includes(S.district)) S.district = -1;
+  districtSel.innerHTML = `<option value="-1">Все округа (${list.length})</option>` + list.map(d => {
+    const x = districtInfo.get(d);
+    return `<option value="${d}">№${d} · ${esc(shortName(x.pw) || '—')}${x.pk ? ' / ' + esc(shortName(x.pk)) : ''}${S.region < 0 ? ' — ' + esc(D.regions[x.region]) : ''}</option>`;
+  }).join('');
+  districtSel.value = String(S.district);
+  const link = $('districtLink');
+  link.hidden = S.district < 0;
+  if (S.district >= 0) { link.href = `https://iditena.ru/districts/${S.district}/`; link.textContent = `№${S.district} на iditena.ru ↗`; }
+}
+const tikDistrictLabel = tikDistricts.map(ds => [...ds].sort((a, b) => a - b).join(', '));
+function searchMatch(){
+  const q = S.tikq.trim().toLowerCase().replace(/^№\s*/, '');
+  if (!q) return null;
+  const numInName = /^\d+$/.test(q) ? new RegExp(`(^|\\D)${q}(\\D|$)`) : null;
+  const found = new Set();
+  for (let i = 0; i < D.tiks.length; i++) if (numInName ? numInName.test(tikLower[i]) : tikLower[i].includes(q)) found.add(i);
+  return found;
+}
+function matchingTiks(m = searchMatch()){
+  const out = [];
+  for (let i = 0; i < D.tiks.length; i++) {
+    if (S.region >= 0 && tikRegion[i] !== S.region) continue;
+    if (S.district >= 0 && !tikDistricts[i].has(S.district)) continue;
+    if (m && !m.has(i)) continue;
+    out.push(i);
+  }
+  return out;
+}
+function fillTikSelect(){
+  const list = matchingTiks();
+  if (S.tik >= 0 && !list.includes(S.tik)) S.tik = -1;
+  const allLabel = S.tikq.trim() ? `Все найденные ТИК (${list.length})` : `Все ТИК (${list.length})`;
+  tikSel.innerHTML = `<option value="-1">${allLabel}</option>` + list.map(i =>
+    `<option value="${i}">${esc(tikName[i])} · окр. ${tikDistrictLabel[i]}${S.region < 0 ? ' — ' + esc(D.regions[tikRegion[i]]) : ''}</option>`).join('');
+  tikSel.value = String(S.tik);
+}
+function syncControls(){
+  regionSel.value = String(S.region);
+  tikq.value = S.tikq;
+  fillDistrictSelect();
+  fillTikSelect();
+  for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).value = S[k];
+  $('hideDeg').checked = S.hideDeg;
+  $('modePct').setAttribute('aria-pressed', S.mode === 'pct');
+  $('modeVotes').setAttribute('aria-pressed', S.mode === 'votes');
+  $('sizeFixed').setAttribute('aria-pressed', S.size === 'fixed');
+  $('sizeVotes').setAttribute('aria-pressed', S.size === 'votes');
+  $('legend').innerHTML = SERIES.map(s =>
+    `<button type="button" data-s="${s.id}" aria-pressed="${!!S.show[s.id]}"><i class="sw" style="background:var(${s.color})"></i>${s.label}</button>`).join('');
+}
+regionSel.onchange = () => { S.region = +regionSel.value; S.tik = -1; fillDistrictSelect(); fillTikSelect(); update(); };
+districtSel.onchange = () => { S.district = +districtSel.value; S.tik = -1; if (S.district >= 0) S.region = districtInfo.get(S.district).region; syncControls(); update(); };
+tikq.oninput = () => { S.tikq = tikq.value; fillTikSelect(); update(); };
+tikSel.onchange = () => { S.tik = +tikSel.value; if (S.tik >= 0 && S.region < 0) { S.region = tikRegion[S.tik]; syncControls(); } update(); };
+for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).oninput = e => { S[k] = e.target.value; update(); };
+$('hideDeg').onchange = e => { S.hideDeg = e.target.checked; update(); };
+$('reset').onclick = () => { Object.assign(S, {tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false}); syncControls(); update(); };
+$('legend').onclick = e => { const b = e.target.closest('button'); if (!b) return; S.show[b.dataset.s] = !S.show[b.dataset.s]; b.setAttribute('aria-pressed', S.show[b.dataset.s]); save(); draw(); renderTable(); };
+$('modePct').onclick = () => { S.mode = 'pct'; syncControls(); save(); draw(); };
+$('modeVotes').onclick = () => { S.mode = 'votes'; syncControls(); save(); draw(); };
+$('sizeFixed').onclick = () => { S.size = 'fixed'; syncControls(); save(); draw(); };
+$('sizeVotes').onclick = () => { S.size = 'votes'; syncControls(); save(); draw(); };
+
+// ---------- selection ----------
+let sel = [], groups = [], groupBy = null;
+function bound(v){ if (v === '' || v === null || isNaN(+v)) return null; return Math.round(+v * 100); }
+function select(){
+  const m = S.tik >= 0 ? null : searchMatch();
+  const tikSet = S.tik >= 0 ? null : new Set(matchingTiks(m));
+  const pwLo = bound(S.pwMin), pwHi = bound(S.pwMax), pkLo = bound(S.pkMin), pkHi = bound(S.pkMax);
+  const pwOn = pwLo !== null || pwHi !== null, pkOn = pkLo !== null || pkHi !== null;
+  const tpLo = bound(S.tpMin), tpHi = bound(S.tpMax), tpOn = tpLo !== null || tpHi !== null;
+  const out = [];
+  for (let i = 0; i < N; i++) {
+    const t = C.t[i];
+    if (S.tik >= 0 ? t !== S.tik : !tikSet.has(t)) continue;
+    if (S.district >= 0 && C.d[i] !== S.district) continue;
+    if (S.hideDeg && (C.f[i] & 1)) continue;
+    if (pwOn) { const v = C.pwp[i]; if (v < 0 || (pwLo !== null && v < pwLo) || (pwHi !== null && v > pwHi)) continue; }
+    if (pkOn) { const v = C.pkp[i]; if (v < 0 || (pkLo !== null && v < pkLo) || (pkHi !== null && v > pkHi)) continue; }
+    if (tpOn) { const v = C.tp[i]; if (v < 0 || (tpLo !== null && v < tpLo) || (tpHi !== null && v > tpHi)) continue; }
+    out.push(i);
+  }
+  sel = out;
+  const regs = new Set(), tks = new Set();
+  for (const i of sel) { tks.add(C.t[i]); regs.add(tikRegion[C.t[i]]); }
+  groupBy = regs.size > 1 ? 'region' : tks.size > 1 ? 'tik' : null;
+  groups = [];
+  if (groupBy) {
+    let cur = null;
+    sel.forEach((row, pos) => {
+      const key = groupBy === 'region' ? tikRegion[C.t[row]] : C.t[row];
+      if (!cur || cur.key !== key) { cur = {key, start:pos, end:pos, rows:[]}; groups.push(cur); }
+      cur.end = pos; cur.rows.push(row);
+    });
+  }
+}
+function agg(rows){
+  const a = {n:rows.length, v:0, i:0, pw:0, pwb:0, pk:0, pkb:0, er:0, erb:0, deg:0};
+  for (const r of rows) {
+    if (C.v[r] > 0 && C.i[r] >= 0) { a.v += C.v[r]; a.i += C.i[r]; }
+    if (C.pwp[r] >= 0 && C.va[r] > 0) { a.pw += C.pw[r]; a.pwb += C.va[r]; }
+    if (C.pkp[r] >= 0 && C.va[r] > 0) { a.pk += C.pk[r]; a.pkb += C.va[r]; }
+    if (C.erp[r] >= 0 && C.fv[r] > 0) { a.er += C.er[r]; a.erb += C.fv[r]; }
+    if (C.f[r] & 1) a.deg++;
+  }
+  return a;
+}
+function groupName(g){ return groupBy === 'region' ? D.regions[g.key] : tikName[g.key]; }
+
+// ---------- header, crumbs, stats ----------
+$('meta').innerHTML = `<span class="num">${fmtInt(N)}</span> УИК · <span class="num">${fmtInt(D.tiks.length)}</span> ТИК · <span class="num">${D.regions.length}</span> регионов`;
+function renderCrumbs(){
+  const parts = [];
+  const isAll = S.region < 0, isRegion = S.region >= 0 && S.district < 0 && S.tik < 0;
+  parts.push(isAll ? '<span class="cur">Все области</span>' : '<button type="button" data-go="all">Все области</button>');
+  if (S.region >= 0) parts.push(isRegion ? `<span class="cur">${esc(D.regions[S.region])}</span>` : `<button type="button" data-go="region">${esc(D.regions[S.region])}</button>`);
+  if (S.district >= 0) parts.push(S.tik < 0 ? `<span class="cur">Округ №${S.district}</span>` : `<button type="button" data-go="district">Округ №${S.district}</button>`);
+  if (S.tik >= 0) parts.push(`<span class="cur">${esc(tikName[S.tik])}</span>`);
+  $('crumbs').innerHTML = parts.join('<span aria-hidden="true">›</span>');
+}
+$('crumbs').onclick = e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.go === 'all') { S.region = -1; S.district = -1; S.tik = -1; }
+  else if (b.dataset.go === 'region') { S.district = -1; S.tik = -1; }
+  else S.tik = -1;
+  syncControls(); update();
+};
+function candidateNames(){
+  const pairs = new Map();
+  for (const r of sel) pairs.set(C.d[r], [C.nw[r], C.nk[r]]);
+  if (pairs.size === 1) { const [w, k] = [...pairs.values()][0]; return {pw:D.names[w] || '—', pk:D.names[k] || 'нет кандидата', d:[...pairs.keys()][0]}; }
+  const n = pairs.size, word = n % 10 === 1 && n % 100 !== 11 ? 'округ' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'округа' : 'округов';
+  return {pw:`${n} ${word}`, pk:`${n} ${word}`, d:null};
+}
+function renderStats(){
+  const a = agg(sel), nm = sel.length ? candidateNames() : {pw:'', pk:''};
+  $('stats').innerHTML = [
+    ['УИК', fmtInt(a.n), a.deg ? `из них ДЭГ: ${a.deg}` : (nm.d ? `округ №${nm.d}` : '&nbsp;')],
+    ['Избирателей', fmtInt(a.v), `выдано ${fmtInt(a.i)}`],
+    [`<i class="sw" style="background:var(--c-tp)"></i>Явка`, fmtShare(a.i, a.v), '&nbsp;'],
+    [`<i class="sw" style="background:var(--c-pw)"></i>ЕР, кандидат`, fmtShare(a.pw, a.pwb), esc(nm.pw)],
+    [`<i class="sw" style="background:var(--c-er)"></i>ЕР, список`, fmtShare(a.er, a.erb), `${fmtInt(a.er)} голосов`],
+    [`<i class="sw" style="background:var(--c-pk)"></i>pick`, fmtShare(a.pk, a.pkb), esc(nm.pk)],
+  ].map(([k, v, n]) => `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span><span class="n" title="${String(n).replace(/<[^>]+>|&nbsp;/g,'')}">${n}</span></div>`).join('');
+}
+
+// ---------- chart ----------
+const cv = $('cv'), ov = $('ov'), box = $('chartbox'), tip = $('tip');
+const M = {l:48, r:12, t:26, b:34};
+let geo = null, hoverPos = -1;
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function sizeCanvas(c){ const dpr = window.devicePixelRatio || 1, w = box.clientWidth, h = box.clientHeight; c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); const g = c.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); return {g, w, h}; }
+function valueOf(s, r){ return S.mode === 'pct' ? (C[s.pct][r] < 0 ? null : C[s.pct][r] / 100) : (C[s.votes][r] < 0 || (s.id !== 'tp' && C[s.pct][r] < 0) ? null : C[s.votes][r]); }
+function niceMax(v){ if (v <= 0) return 10; const p = Math.pow(10, Math.floor(Math.log10(v))); for (const m of [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p; return 10 * p; }
+
+function draw(){
+  const {g, w, h} = sizeCanvas(cv); sizeCanvas(ov);
+  g.clearRect(0, 0, w, h);
+  const n = sel.length;
+  $('empty').hidden = n > 0;
+  if (!n) { geo = null; $('hint').textContent = ''; return; }
+  const pw = w - M.l - M.r, ph = h - M.t - M.b;
+  const active = SERIES.filter(s => S.show[s.id]);
+  let yMax = 100;
+  if (S.mode === 'votes') { let m = 0; for (const s of active) for (const r of sel) { const v = valueOf(s, r); if (v !== null && v > m) m = v; } yMax = niceMax(m); }
+  const X = pos => M.l + (pos + 0.5) * pw / n, Y = v => M.t + ph - v / yMax * ph;
+  geo = {n, pw, ph, X, Y, w, h};
+  const ink = tok('--ink'), muted = tok('--muted'), line = tok('--line'), soft = tok('--line-soft');
+
+  g.font = '11px ' + tok('--mono'); g.textBaseline = 'middle'; g.textAlign = 'right';
+  const steps = 5;
+  for (let k = 0; k <= steps; k++) {
+    const v = yMax * k / steps, y = Y(v);
+    g.strokeStyle = k === 0 ? line : soft; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(M.l, Math.round(y) + .5); g.lineTo(w - M.r, Math.round(y) + .5); g.stroke();
+    g.fillStyle = muted; g.fillText(S.mode === 'pct' ? v + '%' : fmtInt(Math.round(v)), M.l - 6, y);
+  }
+
+  g.textBaseline = 'top'; g.textAlign = 'center';
+  if (groupBy) {
+    g.font = '11px ' + tok('--font');
+    groups.forEach((gr, gi) => {
+      const x0 = M.l + gr.start * pw / n, x1 = M.l + (gr.end + 1) * pw / n;
+      if (gi % 2 === 1) { g.fillStyle = soft; g.globalAlpha = .55; g.fillRect(x0, M.t, x1 - x0, ph); g.globalAlpha = 1; }
+      const name = groupName(gr); let label = name;
+      const room = x1 - x0 - 6;
+      if (g.measureText(label).width > room) { while (label.length > 3 && g.measureText(label + '…').width > room) label = label.slice(0, -1); label = label.length > 3 ? label + '…' : ''; }
+      if (label) { g.fillStyle = muted; g.fillText(label, (x0 + x1) / 2, 8); }
+    });
+  } else {
+    g.fillStyle = muted; g.font = '10.5px ' + tok('--mono');
+    const every = Math.max(1, Math.ceil(n / Math.max(1, pw / 38)));
+    for (let p = 0; p < n; p += every) g.fillText(String(C.u[sel[p]]), X(p), h - M.b + 8);
+    g.fillStyle = muted; g.textAlign = 'left'; g.font = '11px ' + tok('--font');
+    g.fillText('№ УИК →', M.l, h - 13);
+  }
+
+  const rad = n < 120 ? 3.2 : n < 600 ? 2.4 : n < 6000 ? 1.6 : 1.1;
+  const rMax = n < 120 ? 9 : n < 600 ? 6.5 : n < 6000 ? 4 : 2.6, rMin = Math.min(1.2, rad);
+  let vaMax = 1;
+  if (S.size === 'votes') for (const r of sel) if (!(C.f[r] & 1) && C.va[r] > vaMax) vaMax = C.va[r];
+  const radius = r => S.size === 'votes' ? rMin + (rMax - rMin) * Math.sqrt(Math.min(1, Math.max(0, C.va[r]) / vaMax)) : rad;
+  const surface = tok('--surface');
+  for (const s of active) {
+    const col = tok(s.color);
+    g.fillStyle = col;
+    g.globalAlpha = S.size === 'votes' ? (n > 6000 ? .35 : .6) : n > 6000 ? .45 : n > 600 ? .7 : .95;
+    const outline = S.size === 'votes' && n <= 600;
+    if (outline) { g.strokeStyle = surface; g.lineWidth = .8; }
+    for (let p = 0; p < n; p++) {
+      const r = sel[p], v = valueOf(s, r); if (v === null) continue;
+      const rr = radius(r);
+      if (rr < 2) g.fillRect(X(p) - rr, Y(v) - rr, rr * 2, rr * 2);
+      else { g.beginPath(); g.arc(X(p), Y(v), rr, 0, Math.PI * 2); g.fill(); if (outline) g.stroke(); }
+    }
+    g.globalAlpha = 1;
+  }
+  const sizeNote = S.size === 'votes' ? ' Площадь точки — число действительных бюллетеней на участке (ДЭГ — максимальный размер).' : '';
+  $('hint').textContent = groupBy
+    ? `Участки идут подряд внутри каждой ${groupBy === 'region' ? 'области' : 'ТИК'}, по возрастанию номера. Клик по полосе — перейти ${groupBy === 'region' ? 'в область' : 'в ТИК'}.` + sizeNote
+    : `Участки по возрастанию номера. Наведите на точку, чтобы увидеть результаты, клик — полный протокол участка.` + sizeNote;
+  drawHover();
+}
+let groupStarts = new Set();
+
+function drawHover(){
+  const g = ov.getContext('2d'), dpr = window.devicePixelRatio || 1;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, ov.width, ov.height); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (geo && openPos >= 0 && openPos < geo.n) {
+    const xo = Math.round(geo.X(openPos)) + .5;
+    g.strokeStyle = tok('--ink'); g.globalAlpha = .45; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(xo, M.t); g.lineTo(xo, M.t + geo.ph); g.stroke(); g.globalAlpha = 1;
+  }
+  if (!geo || hoverPos < 0 || hoverPos >= geo.n) { tip.hidden = true; return; }
+  const r = sel[hoverPos], x = geo.X(hoverPos);
+  g.strokeStyle = tok('--faint'); g.lineWidth = 1; g.setLineDash([3, 3]);
+  g.beginPath(); g.moveTo(Math.round(x) + .5, M.t); g.lineTo(Math.round(x) + .5, M.t + geo.ph); g.stroke(); g.setLineDash([]);
+  for (const s of SERIES) { if (!S.show[s.id]) continue; const v = valueOf(s, r); if (v === null) continue;
+    g.fillStyle = tok('--surface'); g.strokeStyle = tok(s.color); g.lineWidth = 2;
+    g.beginPath(); g.arc(x, geo.Y(v), 4.5, 0, Math.PI * 2); g.fill(); g.stroke(); }
+  const f = C.f[r], flags = [];
+  if (f & 1) flags.push('ДЭГ'); if (f & 2) flags.push('повторный протокол'); if (f & 4) flags.push('источник: не ЦИК API');
+  const row = (s, val, extra, who) => `<div class="r"><span><i class="sw" style="background:var(${s.color})"></i><span>${who ? `${s.label.replace(', кандидат', '')} · <b style="color:var(--ink);font-weight:500">${esc(who)}</b>` : s.label}</span></span><span class="num">${val}${extra ? ` <span style="color:var(--faint)">${extra}</span>` : ''}</span></div>`;
+  tip.innerHTML = `<div class="t">${esc(D.regions[tikRegion[C.t[r]]])} · ${esc(tikName[C.t[r]])}</div>
+    <div class="r" style="margin-bottom:4px"><b>УИК №${C.u[r]}</b><span class="num" style="color:var(--muted)">${fmtInt(C.v[r])} изб.</span></div>
+    ${row(SERIES[0], fmtPct(C.pwp[r]) + '%', C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '', shortName(D.names[C.nw[r]]) || '—')}
+    ${row(SERIES[1], fmtPct(C.erp[r]) + '%', C.er[r] >= 0 ? fmtInt(C.er[r]) : '')}
+    ${row(SERIES[2], D.names[C.nk[r]] ? fmtPct(C.pkp[r]) + '%' : 'нет', C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '', shortName(D.names[C.nk[r]]) || 'нет кандидата')}
+    ${row(SERIES[3], fmtPct(C.tp[r]) + '%', C.i[r] >= 0 ? fmtInt(C.i[r]) : '')}
+    ${flags.length ? `<div class="flag">${flags.join(' · ')}</div>` : ''}
+    ${groupBy ? '' : '<div class="t" style="margin:6px 0 0">Клик — полный протокол участка</div>'}`;
+  tip.hidden = false;
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let left = x + 14; if (left + tw > geo.w - 4) left = x - tw - 14; if (left < 4) left = 4;
+  tip.style.left = left + 'px'; tip.style.top = Math.max(4, Math.min(M.t, geo.h - th - 4)) + 'px';
+}
+function posFromEvent(e){
+  if (!geo) return -1;
+  const rect = ov.getBoundingClientRect(), x = e.clientX - rect.left;
+  if (x < M.l || x > geo.w - M.r) return -1;
+  return Math.max(0, Math.min(geo.n - 1, Math.floor((x - M.l) / geo.pw * geo.n)));
+}
+ov.addEventListener('pointermove', e => { const p = posFromEvent(e); if (p !== hoverPos) { hoverPos = p; drawHover(); markCell(); } });
+ov.addEventListener('pointerleave', () => { hoverPos = -1; drawHover(); markCell(); });
+ov.addEventListener('click', e => {
+  const p = posFromEvent(e); if (p < 0) return;
+  const r = sel[p];
+  if (!groupBy) { openUik(r); return; }
+  if (groupBy === 'region') { S.region = tikRegion[C.t[r]]; S.district = -1; S.tik = -1; } else { S.tik = C.t[r]; S.region = tikRegion[C.t[r]]; }
+  hoverPos = -1; syncControls(); update();
+});
+
+// ---------- tables ----------
+let sortKey = 'name', sortDir = 1;
+function renderTable(){
+  const tb = $('tableBox');
+  if (!sel.length) { $('tablePanel').hidden = true; return; }
+  $('tablePanel').hidden = false;
+  if (groupBy) {
+    $('tableTitle').textContent = groupBy === 'region' ? 'Области' : 'ТИК';
+    $('tableHint').textContent = 'Клик по строке — перейти внутрь';
+    const rows = groups.map(g => { const a = agg(g.rows); return {g, name:groupName(g), n:a.n, v:a.v,
+      tp:a.v ? a.i / a.v : -1, pw:a.pwb ? a.pw / a.pwb : -1, er:a.erb ? a.er / a.erb : -1, pk:a.pkb ? a.pk / a.pkb : -1}; });
+    rows.sort((a, b) => sortKey === 'name' ? a.name.localeCompare(b.name, 'ru') * sortDir : (a[sortKey] - b[sortKey]) * sortDir);
+    const cols = [['name','Название'],['n','УИК'],['v','Избирателей'],['tp','Явка'],['pw','ЕР, канд.'],['er','ЕР, список'],['pk','pick']];
+    const pctCell = (v, c) => v < 0 ? '—' : `${(v * 100).toFixed(2).replace('.', ',')}<span class="bar" style="width:${Math.round(v * 60)}px;background:var(${c})"></span>`;
+    tb.innerHTML = `<table class="groups"><thead><tr>${cols.map(([k, l]) => `<th data-k="${k}"${k === sortKey ? ` aria-sort="${sortDir > 0 ? 'ascending' : 'descending'}"` : ''}>${l}</th>`).join('')}</tr></thead><tbody>${
+      rows.map(r => `<tr data-key="${r.g.key}"><td>${esc(r.name)}</td><td>${fmtInt(r.n)}</td><td>${fmtInt(r.v)}</td><td>${pctCell(r.tp,'--c-tp')}</td><td>${pctCell(r.pw,'--c-pw')}</td><td>${pctCell(r.er,'--c-er')}</td><td>${pctCell(r.pk,'--c-pk')}</td></tr>`).join('')
+    }</tbody></table>`;
+    return;
+  }
+  $('tableTitle').textContent = 'Участки ТИК';
+  $('tableHint').textContent = 'По горизонтали — УИК по порядку, по вертикали — результаты, %';
+  const cell = (bp, c) => bp < 0 ? '<td>—</td>' : `<td style="background:color-mix(in srgb,var(${c}) ${Math.round(bp / 100 * .55)}%,transparent)">${fmtPct(bp)}</td>`;
+  const lines = [
+    ['УИК', r => `<td data-row="${r}" class="${C.f[r] & 1 ? 'deg' : ''}${r === openRow ? ' open' : ''}" title="${C.f[r] & 1 ? 'ДЭГ · ' : ''}Полный протокол">${C.u[r]}</td>`, true],
+    ...SERIES.filter(s => S.show[s.id]).map(s => [`<i class="sw" style="background:var(${s.color})"></i> ${s.label}`, r => cell(C[s.pct][r], s.color)]),
+    ['Избирателей', r => `<td>${C.v[r] >= 0 ? fmtInt(C.v[r]) : '—'}</td>`],
+    ['Голоса ЕР, канд.', r => `<td>${C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '—'}</td>`],
+    ['Голоса pick', r => `<td>${C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '—'}</td>`],
+  ];
+  tb.innerHTML = `<table class="grid">${lines.map(([label, f, head]) => {
+    const tr = `<tr><th scope="row">${label}</th>${sel.map(f).join('')}</tr>`;
+    return head ? `<thead>${tr}</thead>` : tr; }).join('')}</table>`;
+}
+$('tableBox').addEventListener('click', e => {
+  const th = e.target.closest('th[data-k]');
+  if (th) { const k = th.dataset.k; sortDir = sortKey === k ? -sortDir : (k === 'name' ? 1 : -1); sortKey = k; renderTable(); return; }
+  const uc = e.target.closest('td[data-row]');
+  if (uc) { openUik(+uc.dataset.row); return; }
+  const tr = e.target.closest('tr[data-key]'); if (!tr) return;
+  const key = +tr.dataset.key;
+  if (groupBy === 'region') { S.region = key; S.district = -1; S.tik = -1; } else { S.tik = key; S.region = tikRegion[key]; }
+  syncControls(); update(); window.scrollTo({top:0, behavior:'smooth'});
+});
+let lastCell = null;
+function markCell(){
+  if (lastCell) { lastCell.forEach(c => c.classList.remove('hl')); lastCell = null; }
+  if (groupBy || hoverPos < 0) return;
+  const t = $('tableBox').querySelector('table.grid'); if (!t) return;
+  lastCell = [...t.rows].map(tr => tr.cells[hoverPos + 1]).filter(Boolean);
+  lastCell.forEach(c => c.classList.add('hl'));
+  const c0 = lastCell[0], box2 = $('tableBox');
+  if (c0) { const l = c0.offsetLeft - box2.clientWidth / 2; box2.scrollLeft = l; }
+}
+
+// ---------- UIK card ----------
+const PARTIES = ['Родина', 'Единая Россия', 'КПРФ', 'Партия пенсионеров', 'Новые люди', 'Партия прямой демократии', 'Зелёные', 'Коммунисты России', 'ЛДПР', 'Справедливая Россия'];
+const LINES = ['Избирателей в списке', 'Получено бюллетеней', 'Выдано досрочно', 'Выдано в помещении', 'Выдано вне помещения', 'Погашено', 'В переносных ящиках', 'В стационарных ящиках', 'Недействительных', 'Действительных', 'Утраченных', 'Не учтённых при получении'];
+const detailCache = new Map();
+function loadDistrict(d){
+  if (!detailCache.has(d)) {
+    const p = fetch(`detail/${d}.json`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    p.catch(() => detailCache.delete(d));
+    detailCache.set(d, p);
+  }
+  return detailCache.get(d);
+}
+const share = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + '%' : '—';
+function resultRows(items, base){
+  const max = Math.max(1, ...items.map(x => x.v));
+  return `<table class="res"><tbody>${items.sort((a, b) => b.v - a.v).map(x => `<tr><td><div class="who"><span>${esc(x.name)}</span>${x.note ? `<small>${x.note}</small>` : ''}<div class="track"><i style="width:${(x.v / max * 100).toFixed(1)}%;background:var(${x.color})"></i></div></div></td><td class="v">${share(x.v, base)}<br><span>${fmtInt(x.v)}</span></td></tr>`).join('')}</tbody></table>`;
+}
+function renderCard(r, det, err){
+  const panel = $('uikPanel'), d = C.d[r], u = det && det.uiks[String(C.u[r])];
+  const f = C.f[r], tags = [];
+  if (f & 1) tags.push('<span class="tag warn">ДЭГ</span>');
+  if (f & 2) tags.push('<span class="tag warn">повторный протокол</span>');
+  if (f & 4) tags.push('<span class="tag warn">источник: не ЦИК API</span>');
+  tags.unshift(`<span class="tag">явка <b>${fmtPct(C.tp[r])}%</b></span>`, `<span class="tag">избирателей <b>${fmtInt(C.v[r])}</b></span>`);
+  let body;
+  if (err) body = `<p class="hint">Не удалось загрузить протокол округа №${d}. Проверьте соединение и откройте участок ещё раз.</p>`;
+  else if (!det) body = '<p class="hint">Загружаю протокол…</p>';
+  else if (!u) body = '<p class="hint">Полного протокола этого участка в данных нет.</p>';
+  else {
+    const [l, votes, fed] = u;
+    const cands = det.cands.map(([name, party, fl], i) => ({
+      name, v:votes[i],
+      note:[esc(party), fl & 1 ? '<em>кандидат власти</em>' : '', fl & 2 ? '<em>pick</em>' : ''].filter(Boolean).join(' · '),
+      color:fl & 1 ? '--c-pw' : fl & 2 ? '--c-pk' : '--faint'}));
+    const parties = fed ? PARTIES.map((name, i) => ({name, v:fed[2 + i], color:name === 'Единая Россия' ? '--c-er' : '--faint'})) : null;
+    body = `<div class="card-grid">
+      <div><h3>Одномандатный округ №${d}</h3>${resultRows(cands, l[9])}<div class="foot">Процент — от действительных бюллетеней (${fmtInt(l[9])})</div></div>
+      <div><h3>Федеральный список</h3>${parties ? resultRows(parties, fed[1]) + `<div class="foot">Действительных ${fmtInt(fed[1])} · недействительных ${fmtInt(fed[0])}</div>` : '<p class="hint">Федерального протокола этого участка в данных нет.</p>'}</div>
+      <div><h3>Протокол, одномандатный бюллетень</h3><dl class="proto">${LINES.map((name, i) => `<dt>${i + 1}</dt><span>${name}</span><dd>${fmtInt(l[i])}</dd>`).join('')}</dl></div>
+    </div>`;
+  }
+  panel.innerHTML = `<div class="card-h"><div><h2>УИК №${C.u[r]}</h2>
+    <div class="sub">${esc(D.regions[tikRegion[C.t[r]]])} · ${esc(tikName[C.t[r]])} · <a href="https://iditena.ru/districts/${d}/" target="_blank" rel="noopener">округ №${d}</a>${det ? ' ' + esc(det.name.split(' – ').pop()) : ''}</div></div>
+    <button type="button" class="card-close" id="uikClose" aria-label="Закрыть карточку участка">×</button></div>
+    <div class="tags">${tags.join('')}</div>${body}`;
+  panel.hidden = false;
+  $('uikClose').onclick = closeUik;
+}
+function openUik(r){
+  openRow = r; openPos = sel.indexOf(r);
+  renderCard(r, null);
+  $('uikPanel').scrollIntoView({block:'nearest', behavior:'smooth'});
+  loadDistrict(C.d[r]).then(det => { if (openRow === r) renderCard(r, det); }, () => { if (openRow === r) renderCard(r, null, true); });
+  drawHover(); renderTable(); save();
+}
+function closeUik(){
+  openRow = -1; openPos = -1;
+  $('uikPanel').hidden = true;
+  drawHover(); renderTable(); save();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && openRow >= 0) closeUik(); });
+
+// ---------- main ----------
+function update(){
+  select();
+  groupStarts = new Set(groups.map(g => g.start));
+  hoverPos = -1;
+  if (openRow >= 0) { openPos = groupBy ? -1 : sel.indexOf(openRow); if (openPos < 0) { openRow = -1; $('uikPanel').hidden = true; } }
+  $('chartTitle').textContent = groupBy ? (groupBy === 'region' ? 'Все участки по областям' : 'Участки по ТИК') : 'Результаты по участкам';
+  renderCrumbs(); renderStats(); draw(); renderTable(); save();
+}
+new ResizeObserver(() => draw()).observe(box);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw());
+new MutationObserver(() => draw()).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+syncControls(); update();
+if (pendingUik) {
+  const r = sel.find(i => C.u[i] === pendingUik);
+  if (r !== undefined) {
+    if (groupBy) { S.tik = C.t[r]; S.region = tikRegion[C.t[r]]; syncControls(); update(); }
+    openUik(r);
+  }
+}
+if (document.fonts) document.fonts.ready.then(() => draw());
+</script>
