@@ -1,4 +1,5 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Протоколы УИК</title></head><body style="margin:0">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -106,6 +107,34 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
 .groups tbody tr{cursor:pointer}
 .groups tbody tr:hover{background:var(--hover)}
 .bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-left:6px;opacity:.85}
+#uikPanel{gap:14px}
+.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.card-h h2{font-size:18px;font-weight:700;margin:0}
+.card-h .sub a{color:var(--c-pw)}
+.card-close{font-size:18px;line-height:1;padding:4px 10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:12px;padding:2px 9px;border-radius:99px;background:var(--hover);color:var(--muted)}
+.tag.warn{color:var(--warn)}
+.tag b{color:var(--ink);font-weight:600;font-family:var(--mono)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:18px 28px;align-items:start}
+.card-grid h3{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.res{width:100%;border-collapse:collapse;font-size:13px}
+.res td{padding:5px 0;border-bottom:1px solid var(--line-soft);vertical-align:top;white-space:normal}
+.res td.v{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:10px}
+.res td.v span{color:var(--faint)}
+.res .who{display:flex;flex-direction:column;gap:3px;min-width:0}
+.res .who small{color:var(--muted);font-size:11.5px}
+.res .who small em{font-style:normal;color:var(--ink);font-weight:600}
+.track{height:5px;border-radius:3px;background:var(--line-soft);overflow:hidden}
+.track i{display:block;height:100%;border-radius:3px}
+.foot{font-size:12px;color:var(--muted);margin-top:6px}
+.proto{display:grid;grid-template-columns:auto 1fr auto;gap:4px 10px;font-size:13px;margin:0}
+.proto dt{color:var(--faint);font-family:var(--mono);font-size:11px;padding-top:2px}
+.proto dd{margin:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.proto span{color:var(--muted)}
+.grid thead td{cursor:pointer}
+.grid thead td:hover{text-decoration:underline}
+.grid td.open{box-shadow:inset 0 -2px 0 var(--ink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -177,6 +206,8 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
     <div class="hint" id="hint"></div>
   </section>
 
+  <section class="panel" id="uikPanel" hidden aria-live="polite"></section>
+
   <section class="panel" id="tablePanel">
     <div class="panel-h"><h2 id="tableTitle"></h2><span class="hint" id="tableHint"></span></div>
     <div class="tscroll" id="tableBox"></div>
@@ -203,6 +234,7 @@ const fmtShare = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + 
 
 const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', show:{pw:true, er:true, pk:true, tp:false}};
 let S = structuredClone(DEFAULT);
+let openRow = -1, openPos = -1, pendingUik = 0;
 try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show)}); } catch (e) {}
 readUrl();
 if (S.tik === null) S.tik = D.tiks.findIndex(t => t[0] === S.region);
@@ -227,6 +259,7 @@ function readUrl(){
     if (m) { S[lo] = (m[1] || '').replace(',', '.'); S[hi] = (m[2] || '').replace(',', '.'); }
   }
   S.hideDeg = p.get('nodeg') === '1';
+  pendingUik = +p.get('uik') || 0;
   if (p.has('scale')) S.mode = p.get('scale') === 'votes' ? 'votes' : 'pct';
   if (p.has('size')) S.size = p.get('size') === 'votes' ? 'votes' : 'fixed';
   if (p.has('show')) { const on = p.get('show').split(','); S.show = Object.fromEntries(SERIES.map(s => [s.id, on.includes(s.id)])); }
@@ -241,6 +274,10 @@ function writeUrl(){
   if (S.pkMin !== '' || S.pkMax !== '') p.set('pk', `${S.pkMin}-${S.pkMax}`);
   if (S.tpMin !== '' || S.tpMax !== '') p.set('tp', `${S.tpMin}-${S.tpMax}`);
   if (S.hideDeg) p.set('nodeg', '1');
+  if (openRow >= 0) {
+    if (S.region < 0) p.set('region', D.regions[tikRegion[C.t[openRow]]]);
+    p.set('uik', C.u[openRow]);
+  }
   if (S.mode === 'votes') p.set('scale', 'votes');
   if (S.size === 'votes') p.set('size', 'votes');
   const shown = SERIES.filter(s => S.show[s.id]).map(s => s.id).join(',');
@@ -486,7 +523,7 @@ function draw(){
   const sizeNote = S.size === 'votes' ? ' Площадь точки — число действительных бюллетеней на участке (ДЭГ — максимальный размер).' : '';
   $('hint').textContent = groupBy
     ? `Участки идут подряд внутри каждой ${groupBy === 'region' ? 'области' : 'ТИК'}, по возрастанию номера. Клик по полосе — перейти ${groupBy === 'region' ? 'в область' : 'в ТИК'}.` + sizeNote
-    : `Участки по возрастанию номера. Наведите на точку, чтобы увидеть протокол.` + sizeNote;
+    : `Участки по возрастанию номера. Наведите на точку, чтобы увидеть результаты, клик — полный протокол участка.` + sizeNote;
   drawHover();
 }
 let groupStarts = new Set();
@@ -494,6 +531,11 @@ let groupStarts = new Set();
 function drawHover(){
   const g = ov.getContext('2d'), dpr = window.devicePixelRatio || 1;
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, ov.width, ov.height); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (geo && openPos >= 0 && openPos < geo.n) {
+    const xo = Math.round(geo.X(openPos)) + .5;
+    g.strokeStyle = tok('--ink'); g.globalAlpha = .45; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(xo, M.t); g.lineTo(xo, M.t + geo.ph); g.stroke(); g.globalAlpha = 1;
+  }
   if (!geo || hoverPos < 0 || hoverPos >= geo.n) { tip.hidden = true; return; }
   const r = sel[hoverPos], x = geo.X(hoverPos);
   g.strokeStyle = tok('--faint'); g.lineWidth = 1; g.setLineDash([3, 3]);
@@ -510,7 +552,8 @@ function drawHover(){
     ${row(SERIES[1], fmtPct(C.erp[r]) + '%', C.er[r] >= 0 ? fmtInt(C.er[r]) : '')}
     ${row(SERIES[2], D.names[C.nk[r]] ? fmtPct(C.pkp[r]) + '%' : 'нет', C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '', shortName(D.names[C.nk[r]]) || 'нет кандидата')}
     ${row(SERIES[3], fmtPct(C.tp[r]) + '%', C.i[r] >= 0 ? fmtInt(C.i[r]) : '')}
-    ${flags.length ? `<div class="flag">${flags.join(' · ')}</div>` : ''}`;
+    ${flags.length ? `<div class="flag">${flags.join(' · ')}</div>` : ''}
+    ${groupBy ? '' : '<div class="t" style="margin:6px 0 0">Клик — полный протокол участка</div>'}`;
   tip.hidden = false;
   const tw = tip.offsetWidth, th = tip.offsetHeight;
   let left = x + 14; if (left + tw > geo.w - 4) left = x - tw - 14; if (left < 4) left = 4;
@@ -525,8 +568,9 @@ function posFromEvent(e){
 ov.addEventListener('pointermove', e => { const p = posFromEvent(e); if (p !== hoverPos) { hoverPos = p; drawHover(); markCell(); } });
 ov.addEventListener('pointerleave', () => { hoverPos = -1; drawHover(); markCell(); });
 ov.addEventListener('click', e => {
-  const p = posFromEvent(e); if (p < 0 || !groupBy) return;
+  const p = posFromEvent(e); if (p < 0) return;
   const r = sel[p];
+  if (!groupBy) { openUik(r); return; }
   if (groupBy === 'region') { S.region = tikRegion[C.t[r]]; S.district = -1; S.tik = -1; } else { S.tik = C.t[r]; S.region = tikRegion[C.t[r]]; }
   hoverPos = -1; syncControls(); update();
 });
@@ -554,7 +598,7 @@ function renderTable(){
   $('tableHint').textContent = 'По горизонтали — УИК по порядку, по вертикали — результаты, %';
   const cell = (bp, c) => bp < 0 ? '<td>—</td>' : `<td style="background:color-mix(in srgb,var(${c}) ${Math.round(bp / 100 * .55)}%,transparent)">${fmtPct(bp)}</td>`;
   const lines = [
-    ['УИК', r => `<td class="${C.f[r] & 1 ? 'deg' : ''}" title="${C.f[r] & 1 ? 'ДЭГ' : ''}">${C.u[r]}</td>`, true],
+    ['УИК', r => `<td data-row="${r}" class="${C.f[r] & 1 ? 'deg' : ''}${r === openRow ? ' open' : ''}" title="${C.f[r] & 1 ? 'ДЭГ · ' : ''}Полный протокол">${C.u[r]}</td>`, true],
     ...SERIES.filter(s => S.show[s.id]).map(s => [`<i class="sw" style="background:var(${s.color})"></i> ${s.label}`, r => cell(C[s.pct][r], s.color)]),
     ['Избирателей', r => `<td>${C.v[r] >= 0 ? fmtInt(C.v[r]) : '—'}</td>`],
     ['Голоса ЕР, канд.', r => `<td>${C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '—'}</td>`],
@@ -567,6 +611,8 @@ function renderTable(){
 $('tableBox').addEventListener('click', e => {
   const th = e.target.closest('th[data-k]');
   if (th) { const k = th.dataset.k; sortDir = sortKey === k ? -sortDir : (k === 'name' ? 1 : -1); sortKey = k; renderTable(); return; }
+  const uc = e.target.closest('td[data-row]');
+  if (uc) { openUik(+uc.dataset.row); return; }
   const tr = e.target.closest('tr[data-key]'); if (!tr) return;
   const key = +tr.dataset.key;
   if (groupBy === 'region') { S.region = key; S.district = -1; S.tik = -1; } else { S.tik = key; S.region = tikRegion[key]; }
@@ -583,11 +629,74 @@ function markCell(){
   if (c0) { const l = c0.offsetLeft - box2.clientWidth / 2; box2.scrollLeft = l; }
 }
 
+// ---------- UIK card ----------
+const PARTIES = ['Родина', 'Единая Россия', 'КПРФ', 'Партия пенсионеров', 'Новые люди', 'Партия прямой демократии', 'Зелёные', 'Коммунисты России', 'ЛДПР', 'Справедливая Россия'];
+const LINES = ['Избирателей в списке', 'Получено бюллетеней', 'Выдано досрочно', 'Выдано в помещении', 'Выдано вне помещения', 'Погашено', 'В переносных ящиках', 'В стационарных ящиках', 'Недействительных', 'Действительных', 'Утраченных', 'Не учтённых при получении'];
+const detailCache = new Map();
+function loadDistrict(d){
+  if (!detailCache.has(d)) {
+    const p = fetch(`detail/${d}.json`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    p.catch(() => detailCache.delete(d));
+    detailCache.set(d, p);
+  }
+  return detailCache.get(d);
+}
+const share = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + '%' : '—';
+function resultRows(items, base){
+  const max = Math.max(1, ...items.map(x => x.v));
+  return `<table class="res"><tbody>${items.sort((a, b) => b.v - a.v).map(x => `<tr><td><div class="who"><span>${esc(x.name)}</span>${x.note ? `<small>${x.note}</small>` : ''}<div class="track"><i style="width:${(x.v / max * 100).toFixed(1)}%;background:var(${x.color})"></i></div></div></td><td class="v">${share(x.v, base)}<br><span>${fmtInt(x.v)}</span></td></tr>`).join('')}</tbody></table>`;
+}
+function renderCard(r, det, err){
+  const panel = $('uikPanel'), d = C.d[r], u = det && det.uiks[String(C.u[r])];
+  const f = C.f[r], tags = [];
+  if (f & 1) tags.push('<span class="tag warn">ДЭГ</span>');
+  if (f & 2) tags.push('<span class="tag warn">повторный протокол</span>');
+  if (f & 4) tags.push('<span class="tag warn">источник: не ЦИК API</span>');
+  tags.unshift(`<span class="tag">явка <b>${fmtPct(C.tp[r])}%</b></span>`, `<span class="tag">избирателей <b>${fmtInt(C.v[r])}</b></span>`);
+  let body;
+  if (err) body = `<p class="hint">Не удалось загрузить протокол округа №${d}. Проверьте соединение и откройте участок ещё раз.</p>`;
+  else if (!det) body = '<p class="hint">Загружаю протокол…</p>';
+  else if (!u) body = '<p class="hint">Полного протокола этого участка в данных нет.</p>';
+  else {
+    const [l, votes, fed] = u;
+    const cands = det.cands.map(([name, party, fl], i) => ({
+      name, v:votes[i],
+      note:[esc(party), fl & 1 ? '<em>кандидат власти</em>' : '', fl & 2 ? '<em>pick</em>' : ''].filter(Boolean).join(' · '),
+      color:fl & 1 ? '--c-pw' : fl & 2 ? '--c-pk' : '--faint'}));
+    const parties = fed ? PARTIES.map((name, i) => ({name, v:fed[2 + i], color:name === 'Единая Россия' ? '--c-er' : '--faint'})) : null;
+    body = `<div class="card-grid">
+      <div><h3>Одномандатный округ №${d}</h3>${resultRows(cands, l[9])}<div class="foot">Процент — от действительных бюллетеней (${fmtInt(l[9])})</div></div>
+      <div><h3>Федеральный список</h3>${parties ? resultRows(parties, fed[1]) + `<div class="foot">Действительных ${fmtInt(fed[1])} · недействительных ${fmtInt(fed[0])}</div>` : '<p class="hint">Федерального протокола этого участка в данных нет.</p>'}</div>
+      <div><h3>Протокол, одномандатный бюллетень</h3><dl class="proto">${LINES.map((name, i) => `<dt>${i + 1}</dt><span>${name}</span><dd>${fmtInt(l[i])}</dd>`).join('')}</dl></div>
+    </div>`;
+  }
+  panel.innerHTML = `<div class="card-h"><div><h2>УИК №${C.u[r]}</h2>
+    <div class="sub">${esc(D.regions[tikRegion[C.t[r]]])} · ${esc(tikName[C.t[r]])} · <a href="https://iditena.ru/districts/${d}/" target="_blank" rel="noopener">округ №${d}</a>${det ? ' ' + esc(det.name.split(' – ').pop()) : ''}</div></div>
+    <button type="button" class="card-close" id="uikClose" aria-label="Закрыть карточку участка">×</button></div>
+    <div class="tags">${tags.join('')}</div>${body}`;
+  panel.hidden = false;
+  $('uikClose').onclick = closeUik;
+}
+function openUik(r){
+  openRow = r; openPos = sel.indexOf(r);
+  renderCard(r, null);
+  $('uikPanel').scrollIntoView({block:'nearest', behavior:'smooth'});
+  loadDistrict(C.d[r]).then(det => { if (openRow === r) renderCard(r, det); }, () => { if (openRow === r) renderCard(r, null, true); });
+  drawHover(); renderTable(); save();
+}
+function closeUik(){
+  openRow = -1; openPos = -1;
+  $('uikPanel').hidden = true;
+  drawHover(); renderTable(); save();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && openRow >= 0) closeUik(); });
+
 // ---------- main ----------
 function update(){
   select();
   groupStarts = new Set(groups.map(g => g.start));
   hoverPos = -1;
+  if (openRow >= 0) { openPos = groupBy ? -1 : sel.indexOf(openRow); if (openPos < 0) { openRow = -1; $('uikPanel').hidden = true; } }
   $('chartTitle').textContent = groupBy ? (groupBy === 'region' ? 'Все участки по областям' : 'Участки по ТИК') : 'Результаты по участкам';
   renderCrumbs(); renderStats(); draw(); renderTable(); save();
 }
@@ -595,6 +704,13 @@ new ResizeObserver(() => draw()).observe(box);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw());
 new MutationObserver(() => draw()).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
 syncControls(); update();
+if (pendingUik) {
+  const r = sel.find(i => C.u[i] === pendingUik);
+  if (r !== undefined) {
+    if (groupBy) { S.tik = C.t[r]; S.region = tikRegion[C.t[r]]; syncControls(); update(); }
+    openUik(r);
+  }
+}
 if (document.fonts) document.fonts.ready.then(() => draw());
 </script>
 </body></html>
