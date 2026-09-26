@@ -8,6 +8,7 @@
   --bg:#f3f5f8; --surface:#ffffff; --ink:#18202e; --muted:#5b6475; --faint:#8a92a3;
   --line:#dde2ea; --line-soft:#eceff4; --hover:#eef2f8; --focus:#2554c7;
   --c-pw:#2554c7; --c-er:#7f9be0; --c-pk:#d9661a; --c-tp:#7a52b8;
+  --c-p0:#7a5230; --c-p1:#2554c7; --c-p2:#c62828; --c-p3:#c2477f; --c-p4:#0e9aa7; --c-p5:#5f7482; --c-p6:#2e8b57; --c-p7:#8b1e3f; --c-p8:#b58900; --c-p9:#e36c0a;
   --warn:#b4541a;
   --font:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -18,6 +19,7 @@
     --bg:#10141b; --surface:#171d27; --ink:#e4e8ef; --muted:#9aa3b4; --faint:#6d7688;
     --line:#2a3240; --line-soft:#212835; --hover:#1f2735; --focus:#7ea0ff;
     --c-pw:#6e93ff; --c-er:#a6b9ee; --c-pk:#ff9447; --c-tp:#b691ec; --warn:#f0a068;
+    --c-p0:#b88a5e; --c-p1:#6e93ff; --c-p2:#ff6b6b; --c-p3:#f07fb3; --c-p4:#3fd0db; --c-p5:#9aaebb; --c-p6:#5cc88a; --c-p7:#d0607f; --c-p8:#f2c232; --c-p9:#ff9447;
   }
 }
 :root[data-theme="dark"]{
@@ -25,6 +27,7 @@
   --bg:#10141b; --surface:#171d27; --ink:#e4e8ef; --muted:#9aa3b4; --faint:#6d7688;
   --line:#2a3240; --line-soft:#212835; --hover:#1f2735; --focus:#7ea0ff;
   --c-pw:#6e93ff; --c-er:#a6b9ee; --c-pk:#ff9447; --c-tp:#b691ec; --warn:#f0a068;
+  --c-p0:#b88a5e; --c-p1:#6e93ff; --c-p2:#ff6b6b; --c-p3:#f07fb3; --c-p4:#3fd0db; --c-p5:#9aaebb; --c-p6:#5cc88a; --c-p7:#d0607f; --c-p8:#f2c232; --c-p9:#ff9447;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:14px;line-height:1.45}
@@ -77,6 +80,8 @@ button:hover{background:var(--hover)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
 .seg button{border:none;border-radius:0;padding:4px 10px;font-size:13px}
 .seg button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+.seg.ballot{align-self:flex-start;max-width:100%}
+.seg.ballot button{font-size:14px;padding:7px 14px}
 .chartbox{position:relative;height:380px}
 .chartbox canvas{position:absolute;inset:0;width:100%;height:100%}
 .hint{font-size:12px;color:var(--faint)}
@@ -146,6 +151,10 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
     <h1>Протоколы УИК</h1>
     <div class="sub"><span id="meta"></span> · данные: <a href="https://deg.zhizhin.xyz/shpilkin.html" target="_blank" rel="noopener">deg.zhizhin.xyz/shpilkin.html</a></div>
   </header>
+  <div class="seg ballot" role="group" aria-label="Бюллетень">
+    <button type="button" id="ballotSm" aria-pressed="true">Одномандатный округ</button>
+    <button type="button" id="ballotFed" aria-pressed="false">Федеральный список</button>
+  </div>
 
   <section class="filters" aria-label="Фильтры">
     <div class="f">
@@ -227,26 +236,33 @@ th,td{padding:5px 8px;white-space:nowrap;border-bottom:1px solid var(--line-soft
 
 <script>
 const D = /*DATA*/null;
+const FED_VERSION = '/*FED_VERSION*/';
 const C = D.cols, N = C.t.length;
 const tikRegion = D.tiks.map(t => t[0]), tikName = D.tiks.map(t => t[1]);
 const tikLower = tikName.map(s => s.toLowerCase());
 
-const SERIES = [
-  {id:'pw', label:'ЕР, кандидат', color:'--c-pw', pct:'pwp', votes:'pw', base:'va'},
-  {id:'er', label:'ЕР, список', color:'--c-er', pct:'erp', votes:'er', base:'fv'},
-  {id:'pk', label:'pick', color:'--c-pk', pct:'pkp', votes:'pk', base:'va'},
-  {id:'tp', label:'Явка', color:'--c-tp', pct:'tp', votes:'i', base:'v'},
+const TURNOUT = {id:'tp', label:'Явка', color:'--c-tp', pct:'tp', votes:'i', base:'v'};
+const SM_SERIES = [
+  {id:'pw', label:'ЕР, кандидат', color:'--c-pw', pct:'pwp', votes:'pw', base:'bw'},
+  {id:'er', label:'ЕР, список', color:'--c-er', pct:'erp', votes:'er', base:'be'},
+  {id:'pk', label:'pick', color:'--c-pk', pct:'pkp', votes:'pk', base:'bw'},
+  TURNOUT,
 ];
+const PARTIES = ['Родина', 'Единая Россия', 'КПРФ', 'Партия пенсионеров', 'Новые люди', 'Партия прямой демократии', 'Зелёные', 'Коммунисты России', 'ЛДПР', 'Справедливая Россия'];
+const FED_SERIES = [1, 2, 8, 4, 9, 3, 6, 0, 7, 5].map(i => ({id:'p' + i, label:PARTIES[i], color:'--c-p' + i, pct:'p' + i + 'p', votes:'p' + i, base:'be'})).concat(TURNOUT);
+let SERIES = SM_SERIES;
+const fedMode = () => SERIES === FED_SERIES;
+const shown = () => fedMode() ? S.showFed : S.show;
 
 const $ = id => document.getElementById(id);
 const fmtInt = n => n.toLocaleString('ru-RU');
 const fmtPct = bp => bp < 0 ? '—' : (bp / 100).toFixed(2).replace('.', ',');
 const fmtShare = (a, b) => b > 0 ? (a / b * 100).toFixed(2).replace('.', ',') + '%' : '—';
 
-const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', denom:'part', show:{pw:true, er:true, pk:true, tp:false}};
+const DEFAULT = {region:0, district:-1, tik:null, tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false, mode:'pct', size:'fixed', denom:'part', ballot:'sm', show:{pw:true, er:true, pk:true, tp:false}, showFed:{p1:true, p2:true, p4:true, tp:true}};
 let S = structuredClone(DEFAULT);
 let openRow = -1, openPos = -1, pendingUik = 0;
-try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show)}); } catch (e) {}
+try { const saved = JSON.parse(localStorage.getItem('uik-state') || 'null'); if (saved) S = Object.assign(S, saved, {show:Object.assign({}, DEFAULT.show, saved.show), showFed:Object.assign({}, DEFAULT.showFed, saved.showFed)}); } catch (e) {}
 readUrl();
 if (S.tik === null) S.tik = D.tiks.findIndex(t => t[0] === S.region);
 const save = () => { try { localStorage.setItem('uik-state', JSON.stringify(S)); } catch (e) {} writeUrl(); };
@@ -255,7 +271,8 @@ function readUrl(){
   let p;
   try { p = new URLSearchParams(location.search); } catch (e) { return; }
   if (![...p.keys()].length) return;
-  S = Object.assign(structuredClone(DEFAULT), {mode:S.mode, size:S.size, show:S.show});
+  S = Object.assign(structuredClone(DEFAULT), {mode:S.mode, size:S.size, show:S.show, showFed:S.showFed});
+  S.ballot = p.get('ballot') === 'fed' ? 'fed' : 'sm';
   const region = p.get('region');
   S.region = region ? D.regions.indexOf(region) : -1;
   const okrug = +p.get('okrug');
@@ -274,7 +291,10 @@ function readUrl(){
   if (p.has('scale')) S.mode = p.get('scale') === 'votes' ? 'votes' : 'pct';
   if (p.has('base')) S.denom = ['valid', 'list'].includes(p.get('base')) ? p.get('base') : 'part';
   if (p.has('size')) S.size = p.get('size') === 'votes' ? 'votes' : 'fixed';
-  if (p.has('show')) { const on = p.get('show').split(','); S.show = Object.fromEntries(SERIES.map(s => [s.id, on.includes(s.id)])); }
+  if (p.has('show')) {
+    const on = p.get('show').split(','), list = S.ballot === 'fed' ? FED_SERIES : SM_SERIES;
+    S[S.ballot === 'fed' ? 'showFed' : 'show'] = Object.fromEntries(list.map(s => [s.id, on.includes(s.id)]));
+  }
 }
 function writeUrl(){
   const p = new URLSearchParams();
@@ -293,8 +313,10 @@ function writeUrl(){
   if (S.mode === 'votes') p.set('scale', 'votes');
   if (S.size === 'votes') p.set('size', 'votes');
   if (S.denom !== 'part') p.set('base', S.denom);
-  const shown = SERIES.filter(s => S.show[s.id]).map(s => s.id).join(',');
-  if (shown !== 'pw,er,pk') p.set('show', shown);
+  if (S.ballot === 'fed') p.set('ballot', 'fed');
+  const list = S.ballot === 'fed' ? FED_SERIES : SM_SERIES, on = S.ballot === 'fed' ? S.showFed : S.show;
+  const ids = list.filter(s => on[s.id]).map(s => s.id).join(','), def = S.ballot === 'fed' ? 'p1,p2,p4,tp' : 'pw,er,pk';
+  if (ids !== def) p.set('show', ids);
   const qs = p.toString();
   try { history.replaceState(null, '', qs ? '?' + qs : location.pathname); } catch (e) {}
 }
@@ -314,6 +336,19 @@ function applyDenom(){
     C.bw[i] = bw; C.be[i] = be;
     C.pwp[i] = bp(C.pw[i], bw); C.pkp[i] = bp(C.pk[i], bw); C.erp[i] = bp(C.er[i], be);
   }
+  if (fedLoaded) for (let k = 0; k < PARTIES.length; k++) {
+    const votes = C['p' + k], pct = C['p' + k + 'p'];
+    for (let i = 0; i < N; i++) pct[i] = bp(votes[i], C.be[i]);
+  }
+}
+let fedLoaded = false, fedLoading = null;
+function loadFed(){
+  if (!fedLoading) fedLoading = fetch(`fed.json?v=${FED_VERSION}`).then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(j => {
+    j.p.forEach((arr, k) => { C['p' + k] = arr; C['p' + k + 'p'] = new Array(N); });
+    fedLoaded = true; applyDenom();
+  });
+  fedLoading.catch(() => { fedLoading = null; });
+  return fedLoading;
 }
 applyDenom();
 
@@ -382,7 +417,7 @@ function syncControls(){
   $('sizeFixed').setAttribute('aria-pressed', S.size === 'fixed');
   $('sizeVotes').setAttribute('aria-pressed', S.size === 'votes');
   $('legend').innerHTML = SERIES.map(s =>
-    `<button type="button" data-s="${s.id}" aria-pressed="${!!S.show[s.id]}"><i class="sw" style="background:var(${s.color})"></i>${s.label}</button>`).join('');
+    `<button type="button" data-s="${s.id}" aria-pressed="${!!shown()[s.id]}"><i class="sw" style="background:var(${s.color})"></i>${s.label}</button>`).join('');
 }
 regionSel.onchange = () => { S.region = +regionSel.value; S.tik = -1; fillDistrictSelect(); fillTikSelect(); update(); };
 districtSel.onchange = () => { S.district = +districtSel.value; S.tik = -1; if (S.district >= 0) S.region = districtInfo.get(S.district).region; syncControls(); update(); };
@@ -392,11 +427,26 @@ for (const k of ['pwMin','pwMax','pkMin','pkMax','tpMin','tpMax']) $(k).oninput 
 $('hideDeg').onchange = e => { S.hideDeg = e.target.checked; update(); };
 $('denom').onchange = e => { S.denom = e.target.value; applyDenom(); update(); if (openRow >= 0) openUik(openRow); };
 $('reset').onclick = () => { Object.assign(S, {tikq:'', pwMin:'', pwMax:'', pkMin:'', pkMax:'', tpMin:'', tpMax:'', hideDeg:false}); syncControls(); update(); };
-$('legend').onclick = e => { const b = e.target.closest('button'); if (!b) return; S.show[b.dataset.s] = !S.show[b.dataset.s]; b.setAttribute('aria-pressed', S.show[b.dataset.s]); save(); draw(); renderTable(); };
+$('legend').onclick = e => { const b = e.target.closest('button'); if (!b) return; const on = shown(); on[b.dataset.s] = !on[b.dataset.s]; b.setAttribute('aria-pressed', on[b.dataset.s]); save(); renderStats(); draw(); renderTable(); };
 $('modePct').onclick = () => { S.mode = 'pct'; syncControls(); save(); draw(); };
 $('modeVotes').onclick = () => { S.mode = 'votes'; syncControls(); save(); draw(); };
 $('sizeFixed').onclick = () => { S.size = 'fixed'; syncControls(); save(); draw(); };
 $('sizeVotes').onclick = () => { S.size = 'votes'; syncControls(); save(); draw(); };
+function setBallot(b){
+  S.ballot = b;
+  $('ballotSm').setAttribute('aria-pressed', b === 'sm');
+  $('ballotFed').setAttribute('aria-pressed', b === 'fed');
+  if (b === 'fed' && !fedLoaded) {
+    $('ballotFed').textContent = 'Федеральный список — загрузка…';
+    loadFed().then(() => { $('ballotFed').textContent = 'Федеральный список'; if (S.ballot === 'fed') setBallot('fed'); },
+      () => { $('ballotFed').textContent = 'Федеральный список — не загрузился, нажмите ещё раз'; S.ballot = 'sm'; setBallot('sm'); });
+    return;
+  }
+  SERIES = b === 'fed' ? FED_SERIES : SM_SERIES;
+  syncControls(); update();
+}
+$('ballotSm').onclick = () => setBallot('sm');
+$('ballotFed').onclick = () => setBallot('fed');
 
 // ---------- selection ----------
 let sel = [], groups = [], groupBy = null;
@@ -433,14 +483,15 @@ function select(){
   }
 }
 function agg(rows){
-  const a = {n:rows.length, v:0, i:0, pw:0, pwb:0, pk:0, pkb:0, er:0, erb:0, deg:0};
+  const a = {n:rows.length, v:0, i:0, deg:0, s:{}};
+  const list = SERIES.filter(s => s !== TURNOUT);
+  for (const s of list) a.s[s.id] = [0, 0];
   for (const r of rows) {
     if (C.v[r] > 0 && C.i[r] >= 0) { a.v += C.v[r]; a.i += C.i[r]; }
-    if (C.pwp[r] >= 0) { a.pw += C.pw[r]; a.pwb += C.bw[r]; }
-    if (C.pkp[r] >= 0) { a.pk += C.pk[r]; a.pkb += C.bw[r]; }
-    if (C.erp[r] >= 0) { a.er += C.er[r]; a.erb += C.be[r]; }
+    for (const s of list) if (C[s.pct][r] >= 0) { a.s[s.id][0] += C[s.votes][r]; a.s[s.id][1] += C[s.base][r]; }
     if (C.f[r] & 1) a.deg++;
   }
+  a.share = id => id === 'tp' ? (a.v ? a.i / a.v : -1) : (a.s[id][1] ? a.s[id][0] / a.s[id][1] : -1);
   return a;
 }
 function groupName(g){ return groupBy === 'region' ? D.regions[g.key] : tikName[g.key]; }
@@ -472,14 +523,20 @@ function candidateNames(){
 }
 function renderStats(){
   const a = agg(sel), nm = sel.length ? candidateNames() : {pw:'', pk:''};
-  $('stats').innerHTML = [
+  const sw = c => `<i class="sw" style="background:var(${c})"></i>`;
+  const head = [
     ['УИК', fmtInt(a.n), a.deg ? `из них ДЭГ: ${a.deg}` : (nm.d ? `округ №${nm.d}` : '&nbsp;')],
     ['Избирателей', fmtInt(a.v), `выдано ${fmtInt(a.i)}`],
-    [`<i class="sw" style="background:var(--c-tp)"></i>Явка`, fmtShare(a.i, a.v), '&nbsp;'],
-    [`<i class="sw" style="background:var(--c-pw)"></i>ЕР, кандидат`, fmtShare(a.pw, a.pwb), esc(nm.pw)],
-    [`<i class="sw" style="background:var(--c-er)"></i>ЕР, список`, fmtShare(a.er, a.erb), `${fmtInt(a.er)} голосов`],
-    [`<i class="sw" style="background:var(--c-pk)"></i>pick`, fmtShare(a.pk, a.pkb), esc(nm.pk)],
-  ].map(([k, v, n]) => `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span><span class="n" title="${String(n).replace(/<[^>]+>|&nbsp;/g,'')}">${n}</span></div>`).join('');
+    [`${sw('--c-tp')}Явка`, fmtShare(a.i, a.v), '&nbsp;'],
+  ];
+  const cards = fedMode()
+    ? FED_SERIES.filter(s => s !== TURNOUT && shown()[s.id]).map(s => [`${sw(s.color)}${s.label}`, fmtShare(...a.s[s.id]), `${fmtInt(a.s[s.id][0])} голосов`])
+    : [
+      [`${sw('--c-pw')}ЕР, кандидат`, fmtShare(...a.s.pw), esc(nm.pw)],
+      [`${sw('--c-er')}ЕР, список`, fmtShare(...a.s.er), `${fmtInt(a.s.er[0])} голосов`],
+      [`${sw('--c-pk')}pick`, fmtShare(...a.s.pk), esc(nm.pk)],
+    ];
+  $('stats').innerHTML = head.concat(cards).map(([k, v, n]) => `<div class="stat"><span class="k">${k}</span><span class="v">${v}</span><span class="n" title="${String(n).replace(/<[^>]+>|&nbsp;/g,'')}">${n}</span></div>`).join('');
 }
 
 // ---------- chart ----------
@@ -498,7 +555,7 @@ function draw(){
   $('empty').hidden = n > 0;
   if (!n) { geo = null; $('hint').textContent = ''; return; }
   const pw = w - M.l - M.r, ph = h - M.t - M.b;
-  const active = SERIES.filter(s => S.show[s.id]);
+  const active = SERIES.filter(s => shown()[s.id]);
   let yMax = 100;
   if (S.mode === 'votes') { let m = 0; for (const s of active) for (const r of sel) { const v = valueOf(s, r); if (v !== null && v > m) m = v; } yMax = niceMax(m); }
   const X = pos => M.l + (pos + 0.5) * pw / n, Y = v => M.t + ph - v / yMax * ph;
@@ -574,7 +631,7 @@ function drawHover(){
   const r = sel[hoverPos], x = geo.X(hoverPos);
   g.strokeStyle = tok('--faint'); g.lineWidth = 1; g.setLineDash([3, 3]);
   g.beginPath(); g.moveTo(Math.round(x) + .5, M.t); g.lineTo(Math.round(x) + .5, M.t + geo.ph); g.stroke(); g.setLineDash([]);
-  for (const s of SERIES) { if (!S.show[s.id]) continue; const v = valueOf(s, r); if (v === null) continue;
+  for (const s of SERIES) { if (!shown()[s.id]) continue; const v = valueOf(s, r); if (v === null) continue;
     g.fillStyle = tok('--surface'); g.strokeStyle = tok(s.color); g.lineWidth = 2;
     g.beginPath(); g.arc(x, geo.Y(v), 4.5, 0, Math.PI * 2); g.fill(); g.stroke(); }
   const f = C.f[r], flags = [];
@@ -582,10 +639,12 @@ function drawHover(){
   const row = (s, val, extra, who) => `<div class="r"><span><i class="sw" style="background:var(${s.color})"></i><span>${who ? `${s.label.replace(', кандидат', '')} · <b style="color:var(--ink);font-weight:500">${esc(who)}</b>` : s.label}</span></span><span class="num">${val}${extra ? ` <span style="color:var(--faint)">${extra}</span>` : ''}</span></div>`;
   tip.innerHTML = `<div class="t">${esc(D.regions[tikRegion[C.t[r]]])} · ${esc(tikName[C.t[r]])}</div>
     <div class="r" style="margin-bottom:4px"><b>УИК №${C.u[r]}</b><span class="num" style="color:var(--muted)">${fmtInt(C.v[r])} изб.</span></div>
-    ${row(SERIES[0], fmtPct(C.pwp[r]) + '%', C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '', shortName(D.names[C.nw[r]]) || '—')}
-    ${row(SERIES[1], fmtPct(C.erp[r]) + '%', C.er[r] >= 0 ? fmtInt(C.er[r]) : '')}
-    ${row(SERIES[2], D.names[C.nk[r]] ? fmtPct(C.pkp[r]) + '%' : 'нет', C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '', shortName(D.names[C.nk[r]]) || 'нет кандидата')}
-    ${row(SERIES[3], fmtPct(C.tp[r]) + '%', C.i[r] >= 0 ? fmtInt(C.i[r]) : '')}
+    ${fedMode()
+      ? FED_SERIES.filter(s => s !== TURNOUT && shown()[s.id]).map(s => row(s, fmtPct(C[s.pct][r]) + '%', C[s.votes][r] >= 0 ? fmtInt(C[s.votes][r]) : '')).join('')
+      : row(SM_SERIES[0], fmtPct(C.pwp[r]) + '%', C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '', shortName(D.names[C.nw[r]]) || '—')
+        + row(SM_SERIES[1], fmtPct(C.erp[r]) + '%', C.er[r] >= 0 ? fmtInt(C.er[r]) : '')
+        + row(SM_SERIES[2], D.names[C.nk[r]] ? fmtPct(C.pkp[r]) + '%' : 'нет', C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '', shortName(D.names[C.nk[r]]) || 'нет кандидата')}
+    ${row(TURNOUT, fmtPct(C.tp[r]) + '%', C.i[r] >= 0 ? fmtInt(C.i[r]) : '')}
     ${flags.length ? `<div class="flag">${flags.join(' · ')}</div>` : ''}
     ${groupBy ? '' : '<div class="t" style="margin:6px 0 0">Клик — полный протокол участка</div>'}`;
   tip.hidden = false;
@@ -618,13 +677,15 @@ function renderTable(){
   if (groupBy) {
     $('tableTitle').textContent = groupBy === 'region' ? 'Области' : 'ТИК';
     $('tableHint').textContent = 'Клик по строке — перейти внутрь';
-    const rows = groups.map(g => { const a = agg(g.rows); return {g, name:groupName(g), n:a.n, v:a.v,
-      tp:a.v ? a.i / a.v : -1, pw:a.pwb ? a.pw / a.pwb : -1, er:a.erb ? a.er / a.erb : -1, pk:a.pkb ? a.pk / a.pkb : -1}; });
+    const colSeries = [TURNOUT].concat(fedMode() ? FED_SERIES.filter(s => s !== TURNOUT && shown()[s.id]) : SM_SERIES.slice(0, 3));
+    if (!['name', 'n', 'v'].includes(sortKey) && !colSeries.some(s => s.id === sortKey)) { sortKey = 'name'; sortDir = 1; }
+    const rows = groups.map(g => { const a = agg(g.rows); const o = {g, name:groupName(g), n:a.n, v:a.v}; for (const s of colSeries) o[s.id] = a.share(s.id); return o; });
     rows.sort((a, b) => sortKey === 'name' ? a.name.localeCompare(b.name, 'ru') * sortDir : (a[sortKey] - b[sortKey]) * sortDir);
-    const cols = [['name','Название'],['n','УИК'],['v','Избирателей'],['tp','Явка'],['pw','ЕР, канд.'],['er','ЕР, список'],['pk','pick']];
+    const short = {pw:'ЕР, канд.', er:'ЕР, список'};
+    const cols = [['name','Название'],['n','УИК'],['v','Избирателей']].concat(colSeries.map(s => [s.id, short[s.id] || s.label]));
     const pctCell = (v, c) => v < 0 ? '—' : `${(v * 100).toFixed(2).replace('.', ',')}<span class="bar" style="width:${Math.round(v * 60)}px;background:var(${c})"></span>`;
     tb.innerHTML = `<table class="groups"><thead><tr>${cols.map(([k, l]) => `<th data-k="${k}"${k === sortKey ? ` aria-sort="${sortDir > 0 ? 'ascending' : 'descending'}"` : ''}>${l}</th>`).join('')}</tr></thead><tbody>${
-      rows.map(r => `<tr data-key="${r.g.key}"><td>${esc(r.name)}</td><td>${fmtInt(r.n)}</td><td>${fmtInt(r.v)}</td><td>${pctCell(r.tp,'--c-tp')}</td><td>${pctCell(r.pw,'--c-pw')}</td><td>${pctCell(r.er,'--c-er')}</td><td>${pctCell(r.pk,'--c-pk')}</td></tr>`).join('')
+      rows.map(r => `<tr data-key="${r.g.key}"><td>${esc(r.name)}</td><td>${fmtInt(r.n)}</td><td>${fmtInt(r.v)}</td>${colSeries.map(s => `<td>${pctCell(r[s.id], s.color)}</td>`).join('')}</tr>`).join('')
     }</tbody></table>`;
     return;
   }
@@ -633,11 +694,12 @@ function renderTable(){
   const cell = (bp, c) => bp < 0 ? '<td>—</td>' : `<td style="background:color-mix(in srgb,var(${c}) ${Math.round(bp / 100 * .55)}%,transparent)">${fmtPct(bp)}</td>`;
   const lines = [
     ['УИК', r => `<td data-row="${r}" class="${C.f[r] & 1 ? 'deg' : ''}${r === openRow ? ' open' : ''}" title="${C.f[r] & 1 ? 'ДЭГ · ' : ''}Полный протокол">${C.u[r]}</td>`, true],
-    ...SERIES.filter(s => S.show[s.id]).map(s => [`<i class="sw" style="background:var(${s.color})"></i> ${s.label}`, r => cell(C[s.pct][r], s.color)]),
+    ...SERIES.filter(s => shown()[s.id]).map(s => [`<i class="sw" style="background:var(${s.color})"></i> ${s.label}`, r => cell(C[s.pct][r], s.color)]),
     ['Избирателей', r => `<td>${C.v[r] >= 0 ? fmtInt(C.v[r]) : '—'}</td>`],
+  ].concat(fedMode() ? [] : [
     ['Голоса ЕР, канд.', r => `<td>${C.pw[r] >= 0 ? fmtInt(C.pw[r]) : '—'}</td>`],
     ['Голоса pick', r => `<td>${C.pk[r] >= 0 ? fmtInt(C.pk[r]) : '—'}</td>`],
-  ];
+  ]);
   tb.innerHTML = `<table class="grid">${lines.map(([label, f, head]) => {
     const tr = `<tr><th scope="row">${label}</th>${sel.map(f).join('')}</tr>`;
     return head ? `<thead>${tr}</thead>` : tr; }).join('')}</table>`;
@@ -664,7 +726,6 @@ function markCell(){
 }
 
 // ---------- UIK card ----------
-const PARTIES = ['Родина', 'Единая Россия', 'КПРФ', 'Партия пенсионеров', 'Новые люди', 'Партия прямой демократии', 'Зелёные', 'Коммунисты России', 'ЛДПР', 'Справедливая Россия'];
 const LINES = ['Избирателей в списке', 'Получено бюллетеней', 'Выдано досрочно', 'Выдано в помещении', 'Выдано вне помещения', 'Погашено', 'В переносных ящиках', 'В стационарных ящиках', 'Недействительных', 'Действительных', 'Утраченных', 'Не учтённых при получении'];
 const DETAIL_VERSION = '/*DETAIL_VERSION*/';
 const detailCache = new Map();
@@ -738,13 +799,16 @@ function update(){
   groupStarts = new Set(groups.map(g => g.start));
   hoverPos = -1;
   if (openRow >= 0) { openPos = groupBy ? -1 : sel.indexOf(openRow); if (openPos < 0) { openRow = -1; $('uikPanel').hidden = true; } }
-  $('chartTitle').textContent = groupBy ? (groupBy === 'region' ? 'Все участки по областям' : 'Участки по ТИК') : 'Результаты по участкам';
+  $('chartTitle').textContent = (groupBy ? (groupBy === 'region' ? 'Все участки по областям' : 'Участки по ТИК') : 'Результаты по участкам') + (fedMode() ? ' · федеральный список' : ' · одномандатный округ');
   renderCrumbs(); renderStats(); draw(); renderTable(); save();
 }
 new ResizeObserver(() => draw()).observe(box);
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => draw());
 new MutationObserver(() => draw()).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+const wantFed = S.ballot === 'fed';
+S.ballot = 'sm';
 syncControls(); update();
+if (wantFed) setBallot('fed');
 if (pendingUik) {
   const r = sel.find(i => C.u[i] === pendingUik);
   if (r !== undefined) {

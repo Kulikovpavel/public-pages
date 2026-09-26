@@ -9,7 +9,13 @@ single_participants = {}
 for r in read('uik_single_mandate_full.csv.gz'):
     if r['is_candidate'] != '1' and r['line'] in ('9', '10'):
         single_participants[r['uuid']] = single_participants.get(r['uuid'], 0) + int(r['value'] or 0)
-federal_participants = {r['uuid']: int(r['l09_invalid'] or 0) + int(r['l10_valid'] or 0) for r in read('uik_federal_full.csv.gz')}
+PARTY_KEYS = ['РОДИНА', 'ЕДИНАЯ РОССИЯ', 'КПРФ', 'ПЕНСИОНЕРОВ', 'НОВЫЕ ЛЮДИ', 'прямой демократии', 'ЗЕЛЁНЫЕ', 'КОММУНИСТЫ РОССИИ', 'ЛДПР', 'СПРАВЕДЛИВАЯ РОССИЯ']
+federal = read('uik_federal_full.csv.gz')
+party_cols = [next(c for c in federal.fieldnames if key in c) for key in PARTY_KEYS]
+federal_participants, party_votes = {}, {}
+for r in federal:
+    federal_participants[r['uuid']] = int(r['l09_invalid'] or 0) + int(r['l10_valid'] or 0)
+    party_votes[r['uuid']] = [int(r[c] or 0) for c in party_cols]
 by_district = {r['district']: r['region'] for r in rows if r['region'] not in ('', 'None')}
 for r in rows:
     if r['region'] in ('', 'None'):
@@ -50,14 +56,19 @@ for r in rows:
     cols['nk'].append(nidx[r['pick_name']])
 data = {'regions': regions, 'tiks': [[ridx[a], b] for a, b in tiks], 'names': names, 'cols': cols}
 js = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
+fed = {'p': [[party_votes[r['uuid']][k] if r['uuid'] in party_votes else -1 for r in rows] for k in range(len(PARTY_KEYS))]}
+fed_js = json.dumps(fed, separators=(',', ':'))
+open(os.path.join(SITE, 'fed.json'), 'w', encoding='utf-8').write(fed_js)
 import hashlib
+fed_version = hashlib.sha1(fed_js.encode()).hexdigest()[:10]
 detail_dir = os.path.join(SITE, 'detail')
 digest = hashlib.sha1()
 for name in sorted(os.listdir(detail_dir)):
     digest.update(open(os.path.join(detail_dir, name), 'rb').read())
 out = (open(os.path.join(HERE, 'template.html'), encoding='utf-8').read()
        .replace('/*DATA*/null', js)
-       .replace('/*DETAIL_VERSION*/', digest.hexdigest()[:10]))
+       .replace('/*DETAIL_VERSION*/', digest.hexdigest()[:10])
+       .replace('/*FED_VERSION*/', fed_version))
 title = re.match(r'<title>[^<]*</title>', out).group(0)
 page = ('<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         + title + '</head><body style="margin:0">' + out[len(title):] + '</body></html>')
