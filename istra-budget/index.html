@@ -157,6 +157,45 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
 .infl input { width: 4.2rem; font: 500 13px var(--mono); padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
 .infl[aria-disabled="true"] { opacity: .45; }
 .realnote { font-size: 13px; color: var(--ink-2); background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+.sticky { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 10px; margin-block: -40px -30px; border-bottom: 1px solid var(--line); }
+.hero { display: grid; gap: 16px; }
+.srow { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr) 7.6rem; gap: 14px; align-items: center; }
+.srow .yr { font: 500 14px var(--mono); }
+.sbar { display: flex; gap: 2px; height: 34px; }
+.sbar .seg { height: 100%; }
+.sbar .seg:only-child { border-radius: 0 4px 4px 0; }
+.stot { display: grid; gap: 2px; text-align: right; }
+.stot b { font: 500 15px var(--mono); }
+.stot span { font: 400 12px var(--mono); color: var(--ink-2); }
+.stot span.up { color: var(--sun); }
+.drow { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) 7.2rem; gap: 14px; align-items: center; padding: 8px; border-radius: 8px; border: 0; background: none; color: inherit; font: inherit; text-align: left; width: 100%; cursor: pointer; }
+.drow:hover, .drow:focus-visible { background: var(--bg); }
+.drow:focus-visible { outline: 2px solid var(--bar); outline-offset: 1px; }
+.drow .name { font-weight: 500; font-size: 14px; line-height: 1.3; display: flex; gap: 6px; align-items: baseline; }
+.drow .chev { color: var(--muted); font-size: 11px; transition: transform .15s; flex: none; }
+.drow[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.drow.sub2 { cursor: default; padding-block: 4px; }
+.drow.sub2 .name { font-weight: 400; font-size: 13px; color: var(--ink-2); padding-left: 17px; }
+.dsubs { display: grid; padding-bottom: 8px; }
+.dplot { position: relative; height: 22px; }
+.dplot .zero { position: absolute; top: -6px; bottom: -6px; width: 1px; background: var(--base); }
+.dplot .db { position: absolute; height: 9px; min-width: 2px; }
+.dplot .db.a { top: 1px; } .dplot .db.b { top: 12px; }
+.dplot .db.pos { border-radius: 0 3px 3px 0; } .dplot .db.neg { border-radius: 3px 0 0 3px; }
+.drow.sub2 .dplot .db { opacity: .55; }
+.dvals { display: grid; gap: 1px; text-align: right; font: 400 12px var(--mono); color: var(--ink-2); white-space: nowrap; }
+.dvals b { font-weight: 500; color: var(--ink); }
+.daxis { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) 7.2rem; gap: 14px; padding: 0 8px 4px; font: 400 11px var(--mono); color: var(--muted); }
+.daxis .ax { position: relative; height: 14px; }
+.daxis .ax span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+@media (max-width: 620px) {
+  .drow, .daxis { grid-template-columns: minmax(0, 1fr) 6.4rem; }
+  .drow .name { grid-column: 1 / -1; }
+  .daxis > span:first-child { display: none; }
+  .srow { grid-template-columns: 2.8rem minmax(0, 1fr); }
+  .stot { grid-column: 2; text-align: left; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+  .sticky { margin-block: -40px -30px; }
+}
 </style>
 </head>
 <body>
@@ -164,50 +203,67 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
 <div class="wrap">
   <header>
     <div class="eyebrow">Муниципальный округ Истра · решение № 1/10 от 23.09.2026</div>
-    <h1>Куда идут деньги бюджета Истры в 2026–2028</h1>
-    <p class="lead">Уточнённый бюджет после сентябрьских поправок. Все суммы из приложений 1, 4, 6 и 7 к решению, в номинальных рублях с округлением. Для 2027–2028 годов есть пересчёт в ценах 2026 года.</p>
-    <div class="kpis">
-      <div class="kpi"><div class="eyebrow">Расходы 2026</div><div class="v">18,97<small>млрд ₽</small></div><div class="d">18 967 129,5 тыс. ₽</div></div>
-      <div class="kpi"><div class="eyebrow">Доходы 2026</div><div class="v">18,35<small>млрд ₽</small></div><div class="d">из них 8,04 млрд (44%) — трансферты из области и центра</div></div>
-      <div class="kpi def"><div class="eyebrow">Дефицит 2026</div><div class="v">616<small>млн ₽</small></div><div class="d">453,5 млн — новый долг, 162,5 млн — остатки на счёте</div></div>
-      <div class="kpi"><div class="eyebrow">Долг на 1.01.2027</div><div class="v">3,57<small>млрд ₽</small></div><div class="d">верхний предел; на проценты в 2026 уйдёт 473 млн</div></div>
-    </div>
+    <h1>Бюджет Истры: что меняется к 2027 и 2028 году</h1>
+    <p class="lead">Расходы по разделам в уточнённом бюджете после сентябрьских поправок, 2026 год против планов на 2027 и 2028 годы. Суммы из приложений 4, 6 и 7 к решению.</p>
   </header>
+
+  <div class="ctl sticky">
+    <div class="seg-ctl" role="group" aria-label="Режим сумм">
+      <button type="button" id="m-nom" aria-pressed="true">Номинально</button>
+      <button type="button" id="m-real" aria-pressed="false">В ценах 2026</button>
+    </div>
+    <label class="infl" id="infl-wrap" aria-disabled="true">Инфляция в год <input id="infl" type="number" min="0" max="30" step="0.5" value="4" disabled> %</label>
+  </div>
 
   <section>
     <div class="sec-head">
-      <div class="eyebrow">Приложение 4 · 2026 год</div>
-      <h2>ЖКХ и образование забирают две трети расходов</h2>
-      <p class="hint">Разделы бюджетной классификации по убыванию. Нажмите на строку, чтобы раскрыть подразделы.</p>
+      <div class="eyebrow">Все расходы · 2026 → 2028</div>
+      <h2 id="hero-h"></h2>
+      <p class="lead" id="hero-p"></p>
     </div>
-    <div class="card"><div class="rank" id="rank"></div></div>
+    <div class="card hero">
+      <div class="legend">
+        <span><i class="sw" style="background:var(--bar)"></i>Все разделы, кроме охраны окружающей среды</span>
+        <span><i class="sw" style="background:var(--sun)"></i>Охрана окружающей среды (в основном очистные)</span>
+      </div>
+      <div id="split"></div>
+    </div>
   </section>
 
   <section>
     <div class="sec-head">
-      <div class="eyebrow">Приложение 4 · 2026 → 2028</div>
-      <h2>С 2027 года главная статья — очистные сооружения</h2>
-      <p class="hint">Три полосы на раздел: по одной на год, в одной шкале. Справа изменение 2028 к 2026. Переключатель пересчитывает 2027 и 2028 годы в цены 2026 года по заданной инфляции; по умолчанию 4% — цель Банка России.</p>
+      <div class="eyebrow">Изменение к 2026 году по разделам</div>
+      <h2>Кто прибавляет и кто теряет</h2>
+      <p class="hint">Полоса вправо — раздел получит больше, чем в 2026 году, влево — меньше. Нажмите на раздел, чтобы раскрыть подразделы.</p>
     </div>
     <div class="card" style="display:grid;gap:14px">
-      <div class="ctl">
-        <div class="seg-ctl" role="group" aria-label="Режим сумм">
-          <button type="button" id="m-nom" aria-pressed="true">Номинально</button>
-          <button type="button" id="m-real" aria-pressed="false">В ценах 2026</button>
-        </div>
-        <label class="infl" id="infl-wrap" aria-disabled="true">Инфляция в год <input id="infl" type="number" min="0" max="30" step="0.5" value="4" disabled> %</label>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--y27)"></i>2027 к 2026</span>
+        <span><i class="sw" style="background:var(--y28)"></i>2028 к 2026</span>
       </div>
+      <div id="deltas"></div>
+    </div>
+    <div class="notes">
+      <div class="note"><b class="tag">06 · ×40</b><span><b>Охрана окружающей среды</b> растёт со 166 млн до 5,9–6,6 млрд. Почти всё это бюджетные инвестиции в строительство очистных сооружений в Дедовске и реконструкцию очистных в Павловской Слободе: 5,04 млрд в 2027 и 6,01 млрд в 2028 (приложение 7).</span></div>
+      <div class="note"><b class="tag">05 03 · −50%</b><span><b>Благоустройство</b> после 4,59 млрд в 2026 году падает до 2,3–2,4 млрд. Главная причина — программа «Формирование современной комфортной городской среды»: 3,03 млрд в 2026 году и 1,18 млрд в 2027.</span></div>
+      <div class="note"><b class="tag">05 02 · −57%</b><span><b>Коммунальное хозяйство</b> в 2027 году ещё растёт до 1,98 млрд за счёт водозаборов и теплосетей, а в 2028 году опускается до 0,78 млрд.</span></div>
+      <div class="note"><b class="tag">05 01 · ×6</b><span><b>Жилищное хозяйство</b> в 2028 году подскакивает до 1,41 млрд: 1,36 млрд заложено на переселение из аварийного жилья в посёлке Снегири.</span></div>
+      <div class="note"><b class="tag">01 04 · −70%</b><span><b>Администрация</b> в 2027 году стоит 211 млн против 705 млн сейчас. Плановые годы обычно доуточняют ближе к делу, так что эту цифру стоит считать предварительной.</span></div>
+    </div>
+    <p class="hint">Проценты в карточках номинальные. В 2027 и 2028 годах расходы в приложении 4 меньше итога в решении на условно утверждённые расходы: 266,3 млн и 858,3 млн ₽. Это резерв, который по Бюджетному кодексу не распределяют по статьям заранее. С ним расходы равны доходам: 20,75 и 22,05 млрд.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Суммы по годам</div>
+      <h2>Три года рядом</h2>
+      <p class="hint">Три полосы на раздел, по одной на год, в одной шкале. Справа изменение 2028 к 2026.</p>
+    </div>
+    <div class="card" style="display:grid;gap:14px">
       <div class="legend" id="legend"></div>
       <div id="years"></div>
       <div class="realnote" id="realnote"></div>
     </div>
-    <div class="notes">
-      <div class="note"><b class="tag">06 · ×40</b><span><b>Охрана окружающей среды</b> растёт со 166 млн до 5,9–6,6 млрд. Почти всё это бюджетные инвестиции в строительство очистных сооружений в Дедовске и реконструкцию очистных в Павловской Слободе: 5,04 млрд в 2027 и 6,01 млрд в 2028 (приложение 7).</span></div>
-      <div class="note"><b class="tag">05 01 · ×6</b><span><b>Жилищное хозяйство</b> в 2028 году подскакивает до 1,41 млрд: 1,36 млрд заложено на переселение из аварийного жилья в посёлке Снегири.</span></div>
-      <div class="note"><b class="tag">05 03 · −50%</b><span><b>Благоустройство</b> после 4,59 млрд в 2026 году падает до 2,3–2,4 млрд. Главная причина — программа «Формирование современной комфортной городской среды»: 3,03 млрд в 2026 году и 1,18 млрд в 2027.</span></div>
-      <div class="note"><b class="tag">01 04 · −70%</b><span><b>Администрация</b> в 2027 году стоит 211 млн против 705 млн сейчас. Плановые годы обычно доуточняют ближе к делу, так что эту цифру стоит считать предварительной.</span></div>
-    </div>
-    <p class="hint">В 2027 и 2028 годах расходы в приложении 4 меньше итога в решении на условно утверждённые расходы: 266,3 млн и 858,3 млн ₽. Это резерв, который по Бюджетному кодексу не распределяют по статьям заранее. С ним расходы равны доходам: 20,75 и 22,05 млрд.</p>
   </section>
 
   <section>
@@ -215,8 +271,13 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
       <div class="eyebrow">Приложение 6 · код 01 05 02 01 14</div>
       <h2>Что значат −26,9 и 27,1 млрд в источниках финансирования</h2>
     </div>
+    <div class="kpis">
+      <div class="kpi"><div class="eyebrow">Доходы 2026</div><div class="v">18,35<small>млрд ₽</small></div><div class="d">из них 8,04 млрд (44%) — трансферты из области и центра</div></div>
+      <div class="kpi def"><div class="eyebrow">Дефицит 2026</div><div class="v">616<small>млн ₽</small></div><div class="d">453,5 млн — новый долг, 162,5 млн — остатки на счёте</div></div>
+      <div class="kpi"><div class="eyebrow">Долг на 1.01.2027</div><div class="v">3,57<small>млрд ₽</small></div><div class="d">верхний предел; на проценты в 2026 уйдёт 473 млн</div></div>
+    </div>
     <div class="explain">
-      <p>Это не отдельные деньги и не второй бюджет. Все средства округа лежат на одном счёте в казначействе, и эти две строки показывают <b>полный оборот этого счёта за год</b>. По правилам бюджетной классификации всё, что поступает на счёт, записывается как «увеличение остатков» со знаком минус, а всё, что уходит со счёта, как «уменьшение остатков» со знаком плюс.</p>
+      <p>Это не отдельные деньги и не второй бюджет. Все средства округа лежат на одном счёте в казначействе, и эти две строки показывают <b>полный оборот этого счёта за 2026 год</b>. По правилам бюджетной классификации всё, что поступает на счёт, записывается как «увеличение остатков» со знаком минус, а всё, что уходит со счёта, как «уменьшение остатков» со знаком плюс.</p>
     </div>
     <div class="card flow" id="flow"></div>
     <div class="eq">
@@ -234,6 +295,15 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
   </section>
 
   <section>
+    <div class="sec-head">
+      <div class="eyebrow">Приложение 4 · 2026 год</div>
+      <h2>Структура расходов 2026 года</h2>
+      <p class="hint">ЖКХ и образование вместе — 69% расходов. Нажмите на строку, чтобы раскрыть подразделы.</p>
+    </div>
+    <div class="card"><div class="rank" id="rank"></div></div>
+  </section>
+
+  <section>
     <details>
       <summary id="tbl-sum">Таблица по разделам, тыс. ₽</summary>
       <div class="tscroll"><table class="t" id="tbl"></table></div>
@@ -242,7 +312,7 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
 
   <footer>
     <div>Источники: решение Совета депутатов муниципального округа Истра от 23.09.2026 № 1/10 и приложения 1, 4, 5, 6, 7 к нему (редакция решения от 25.12.2025 № 1/21).</div>
-    <div>Разделы 01–13 по классификации расходов бюджетов РФ. Доли посчитаны от 18 967,1 млн ₽.</div>
+    <div>Разделы 01–13 по классификации расходов бюджетов РФ. Суммы номинальные; в режиме «В ценах 2026» суммы 2027 и 2028 годов делятся на накопленную инфляцию.</div>
   </footer>
 </div>
 <div id="tip" hidden></div>
@@ -375,6 +445,8 @@ function renderYears() {
     ? `При инфляции ${rp}% в год рубль 2028 года стоит ${nf2.format(1 / defl(2))} рубля 2026 года. Номинальный рост расходов на ${nf0.format(g * 100)}% в реальных деньгах превращается в ${gr >= 0 ? "+" : "−"}${nf1.format(Math.abs(gr) * 100)}%, и почти весь этот прирост уходит на очистные.`
     : `Суммы в номинальных рублях: 2027 и 2028 годы заложены в ценах тех лет. Номинально расходы растут на ${nf0.format(g * 100)}% за два года; переключите на «В ценах 2026», чтобы убрать инфляцию.`;
   renderTable();
+  renderSplit();
+  renderDeltas();
 }
 function setMode(real) {
   mode.real = real;
@@ -391,6 +463,86 @@ document.getElementById("infl").addEventListener("input", e => {
   const x = parseFloat(String(e.target.value).replace(",", "."));
   if (Number.isFinite(x) && x >= 0 && x <= 30) { mode.r = x / 100; renderYears(); }
 });
+
+// split and deltas
+const ENV = D.find(d => d.rz === "06");
+const sgn = x => (x >= 0 ? "+" : "−") + short(Math.abs(x));
+const sgnPct = (a, b) => { const p = (a / b - 1) * 100; return (p >= 0 ? "+" : "−") + nf0.format(Math.abs(p)) + "%"; };
+const lower = t => t.charAt(0).toLowerCase() + t.slice(1);
+
+function renderSplit() {
+  const tot = adj(TOT), env = adj(ENV.v), rest = tot.map((t, i) => t - env[i]);
+  const maxT = Math.max(...TOT);
+  const box = document.getElementById("split");
+  box.replaceChildren();
+  YRS.forEach((y, i) => {
+    const row = el("div", "srow");
+    row.append(el("span", "yr", String(y)));
+    const bar = el("div", "sbar");
+    [[rest[i], "var(--bar)", "Все разделы, кроме охраны окружающей среды"], [env[i], "var(--sun)", "Охрана окружающей среды"]].forEach(([v, c, n]) => {
+      const sg = el("span", "seg"); sg.style.width = (v / maxT * 100) + "%"; sg.style.background = c; sg.tabIndex = 0;
+      bindTip(sg, `<b>${y} · ${n}</b><br><span class="tv">${short(v)}</span> ₽${i ? "<br>к 2026: " + sgn(v - (c.includes("sun") ? env[0] : rest[0])) : ""}`);
+      bar.append(sg);
+    });
+    row.append(bar);
+    row.append(el("div", "stot", `<b>${short(tot[i])}</b>${i ? `<span>без экологии ${sgnPct(rest[i], rest[0])}</span>` : `<span>база</span>`}`));
+    box.append(row);
+  });
+  const dTot = tot[2] - tot[0], dEnv = env[2] - env[0], dRest = rest[2] - rest[0];
+  document.getElementById("hero-h").textContent = dRest < 0
+    ? `Без очистных бюджет к 2028 году сокращается на ${nf0.format(Math.abs(dRest / rest[0]) * 100)}%`
+    : `Без очистных бюджет к 2028 году растёт на ${nf0.format(dRest / rest[0] * 100)}%`;
+  document.getElementById("hero-p").innerHTML =
+    `Всего расходы ${dTot >= 0 ? "растут" : "снижаются"} с ${short(tot[0])} в 2026 году до ${short(tot[2])} в 2028 (${sgnPct(tot[2], tot[0])}). ` +
+    `Охрана окружающей среды одна прибавляет ${short(dEnv)}: это стройка очистных в Дедовске и Павловской Слободе. ` +
+    `Все остальные разделы вместе ${dRest < 0 ? "теряют" : "прибавляют"} ${short(Math.abs(dRest))} к 2028 году и ${short(Math.abs(rest[1] - rest[0]))} к 2027.` +
+    (mode.real ? ` Суммы в ценах 2026 года при инфляции ${nf1.format(mode.r * 100)}% в год.` : "");
+}
+
+function renderDeltas() {
+  const box = document.getElementById("deltas");
+  box.replaceChildren();
+  const all = [];
+  [0, mode.r].forEach(r => D.forEach(d => [d.v, ...d.subs.map(x => x[1])].forEach(v => {
+    all.push(v[1] / Math.pow(1 + r, mode.real ? 1 : 0) - v[0], v[2] / Math.pow(1 + r, mode.real ? 2 : 0) - v[0]);
+  })));
+  const lo = Math.min(0, ...all), hi = Math.max(0, ...all), span = hi - lo;
+  const X = v => (v - lo) / span * 100;
+  const ax = el("div", "daxis", `<span></span><div class="ax"></div><span></span>`);
+  for (let t = Math.ceil(lo / 2e9) * 2e9; t <= hi; t += 2e9) {
+    ax.querySelector(".ax").append(el("span", "", `<span style="left:${X(t)}%">${t === 0 ? "0" : (t > 0 ? "+" : "−") + nf0.format(Math.abs(t) / 1e9) + " млрд"}</span>`).firstChild);
+  }
+  box.append(ax);
+  const plot = v => {
+    const a = adj(v), dd = [a[1] - a[0], a[2] - a[0]];
+    return { dd, html: `<span class="dplot"><span class="zero" style="left:${X(0)}%"></span>${dd.map((x, k) =>
+      `<span class="db ${k ? "b" : "a"} ${x >= 0 ? "pos" : "neg"}" style="left:${X(Math.min(0, x))}%;width:${Math.abs(x) / span * 100}%;background:var(--y2${k + 7})"></span>`).join("")}</span>` };
+  };
+  const vals = dd => `<span class="dvals"><span>2027 <b>${sgn(dd[0])}</b></span><span>2028 <b>${sgn(dd[1])}</b></span></span>`;
+  const tipHtml = (title, v) => { const a = adj(v); return `<b>${title}</b>${mode.real ? "<br>в ценах 2026" : ""}<br>${a.map((x, i) => `${YRS[i]}: <span class="tv">${short(x)}</span> ₽${i ? ` (${sgn(x - a[0])}, ${a[0] ? sgnPct(x, a[0]) : "—"})` : ""}`).join("<br>")}`; };
+  [...D].sort((a, b) => (b.v[2] - b.v[0]) - (a.v[2] - a.v[0])).forEach(d => {
+    const expandable = d.subs.length > 1;
+    const row = el(expandable ? "button" : "div", "drow");
+    const p = plot(d.v);
+    row.innerHTML = `<span class="name">${expandable ? `<span class="chev">▶</span>` : `<span class="chev" style="visibility:hidden">▶</span>`}<span>${d.n}</span></span>${p.html}${vals(p.dd)}`;
+    if (!expandable) { row.style.cursor = "default"; row.tabIndex = 0; }
+    bindTip(row, tipHtml(`${d.rz} · ${d.full}`, d.v));
+    box.append(row);
+    if (expandable) {
+      const subs = el("div", "dsubs"); subs.hidden = true; subs.id = "dsubs-" + d.rz;
+      row.setAttribute("aria-expanded", "false"); row.setAttribute("aria-controls", subs.id);
+      [...d.subs].sort((a, b) => (b[1][2] - b[1][0]) - (a[1][2] - a[1][0])).forEach(([n, v]) => {
+        const sr = el("div", "drow sub2"); const sp = plot(v);
+        sr.innerHTML = `<span class="name">${n}</span>${sp.html}${vals(sp.dd)}`;
+        sr.tabIndex = 0; bindTip(sr, tipHtml(n, v)); subs.append(sr);
+      });
+      row.addEventListener("click", () => { const o = row.getAttribute("aria-expanded") === "true"; row.setAttribute("aria-expanded", String(!o)); subs.hidden = o; open.set(d.rz, !o); });
+      if (open.get(d.rz)) { row.setAttribute("aria-expanded", "true"); subs.hidden = false; }
+      box.append(subs);
+    }
+  });
+}
+const open = new Map();
 
 // flows
 const IN = [["Доходы бюджета", 18351151.5, "--s1"], ["Кредиты банков получены", 7365238.0, "--s2"], ["Бюджетный кредит получен", 1173657.0, "--s3"]];
