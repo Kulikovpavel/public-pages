@@ -199,6 +199,9 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
   .stot { grid-column: 2; text-align: left; display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
   .sticky { margin-block: -40px -30px; }
 }
+.igroup { font: 500 12px/1.3 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 14px 8px 4px; display: flex; gap: 8px; align-items: center; }
+.igroup:first-child { padding-top: 0; }
+.igroup + .yrow { border-top: 0; }
 </style>
 </head>
 <body>
@@ -207,7 +210,7 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
   <header>
     <div class="eyebrow">Муниципальный округ Истра · решение № 1/10 от 23.09.2026</div>
     <h1>Бюджет Истры: что меняется к 2027 и 2028 году</h1>
-    <p class="lead">Расходы по разделам в уточнённом бюджете после сентябрьских поправок, 2026 год против планов на 2027 и 2028 годы. Суммы из приложений 4, 6 и 7 к <a href="https://istra-adm.ru/docs/doc/reshenie-soveta-deputatov-munitsipalnogo-okruga-istra-ot-23-sentyabrya-2026-goda-no-1-10-o-vnesenii-iz-518821" target="_blank" rel="noopener">решению на сайте администрации</a>.</p>
+    <p class="lead">Расходы и доходы уточнённого бюджета после сентябрьских поправок, 2026 год против планов на 2027 и 2028 годы. Суммы из приложений 1, 4, 6 и 7 к <a href="https://istra-adm.ru/docs/doc/reshenie-soveta-deputatov-munitsipalnogo-okruga-istra-ot-23-sentyabrya-2026-goda-no-1-10-o-vnesenii-iz-518821" target="_blank" rel="noopener">решению на сайте администрации</a>.</p>
   </header>
 
   <div class="ctl sticky">
@@ -267,6 +270,31 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
       <div id="years"></div>
       <div class="realnote" id="realnote"></div>
     </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Приложение 1 · доходы 2026 → 2028</div>
+      <h2 id="inc-h"></h2>
+      <p class="lead" id="inc-p"></p>
+    </div>
+    <div class="card hero">
+      <div class="legend">
+        <span><i class="sw" style="background:var(--s1)"></i>Налоги</span>
+        <span><i class="sw" style="background:var(--s3)"></i>Неналоговые доходы</span>
+        <span><i class="sw" style="background:var(--s2)"></i>Из бюджетов области и центра</span>
+      </div>
+      <div id="inc-split"></div>
+    </div>
+    <div class="card" style="display:grid;gap:14px">
+      <div class="legend">
+        <span><i class="sw" style="background:var(--y26)"></i>2026</span>
+        <span><i class="sw" style="background:var(--y27)"></i>2027</span>
+        <span><i class="sw" style="background:var(--y28)"></i>2028</span>
+      </div>
+      <div id="inc-rows"></div>
+    </div>
+    <p class="hint">Субвенции — деньги области на полномочия, которые она передала округу; основная часть идёт на школы и детские сады. Субсидии — софинансирование конкретных программ и строек. Доходы 2027 и 2028 годов покрывают и условно утверждённые расходы, поэтому они больше расходов в приложении 4.</p>
   </section>
 
   <section>
@@ -450,6 +478,7 @@ function renderYears() {
   renderTable();
   renderSplit();
   renderDeltas();
+  renderIncome();
 }
 function setMode(real) {
   mode.real = real;
@@ -546,6 +575,71 @@ function renderDeltas() {
   });
 }
 const open = new Map();
+
+// income
+const INC = [
+  { g: 0, n: "НДФЛ", full: "Налог на доходы физических лиц", v: [2535512000, 2944790000, 3460301000] },
+  { g: 0, n: "Земельный налог", full: "Земельный налог: с организаций 2,13 млрд, с физлиц 0,95 млрд в 2026", v: [3081718000, 2784713000, 2784713000] },
+  { g: 0, n: "Налоги малого бизнеса", full: "УСН, патент, АУСН, ЕСХН (налоги на совокупный доход)", v: [1963791000, 2254267000, 2653874000] },
+  { g: 0, n: "Налог на имущество физлиц", full: "Налог на имущество физических лиц", v: [765390000, 827728000, 863433000] },
+  { g: 0, n: "Акцизы и туристический налог", full: "Акцизы на топливо; туристический налог 66,7 млн только в 2026", v: [229402000, 180366000, 187942000] },
+  { g: 0, n: "Госпошлина", full: "Государственная пошлина", v: [127239000, 122019000, 128359000] },
+  { g: 1, n: "Продажа земли и имущества", full: "Продажа земельных участков, плата за увеличение площади участков, продажа имущества", v: [876339000, 643056000, 644056000] },
+  { g: 1, n: "Аренда земли и имущества", full: "Доходы от использования имущества, в основном аренда земли", v: [562528000, 783551000, 795530000] },
+  { g: 1, n: "Штрафы и прочее", full: "Штрафы, компенсация затрат, плата за негативное воздействие, прочие неналоговые", v: [170500000, 111129000, 112248000] },
+  { g: 2, n: "Субвенции", full: "Субвенции на переданные полномочия, в основном школы и детские сады", v: [3926533740, 3971452230, 3971468170] },
+  { g: 2, n: "Субсидии", full: "Субсидии на софинансирование программ и строек", v: [2453504136.05, 5922124406.44, 6316442727.17] },
+  { g: 2, n: "Иные трансферты", full: "Иные межбюджетные трансферты", v: [1658694665.44, 200246000, 134851020] }
+];
+const INC_TOT = [18351151541.49, 20745441636.44, 22053217917.17];
+const IG = [["Налоги", "--s1"], ["Неналоговые доходы", "--s3"], ["Из бюджетов области и центра", "--s2"]];
+const grpSum = g => [0, 1, 2].map(i => INC.filter(x => x.g === g).reduce((a, x) => a + x.v[i], 0));
+
+function renderIncome() {
+  const G = [0, 1, 2].map(g => adj(grpSum(g)));
+  const tot = adj(INC_TOT);
+  const maxT = Math.max(...INC_TOT);
+  const box = document.getElementById("inc-split");
+  box.replaceChildren();
+  YRS.forEach((y, i) => {
+    const row = el("div", "srow");
+    row.append(el("span", "yr", String(y)));
+    const bar = el("div", "sbar");
+    G.forEach((gv, g) => {
+      const sg = el("span", "seg"); sg.style.width = (gv[i] / maxT * 100) + "%"; sg.style.background = `var(${IG[g][1]})`; sg.tabIndex = 0;
+      bindTip(sg, `<b>${y} · ${IG[g][0]}</b><br><span class="tv">${short(gv[i])}</span> ₽ · ${pct(gv[i], tot[i])} доходов${i ? "<br>к 2026: " + sgn(gv[i] - gv[0]) : ""}`);
+      bar.append(sg);
+    });
+    row.append(bar);
+    row.append(el("div", "stot", `<b>${short(tot[i])}</b><span>из области ${pct(G[2][i], tot[i])}</span>`));
+    box.append(row);
+  });
+  const own = G[0].map((x, i) => x + G[1][i]);
+  const ndfl = adj(INC[0].v), usn = adj(INC[2].v), land = adj(INC[1].v), subs = adj(INC[10].v);
+  const sh = i => G[2][i] / tot[i] * 100;
+  document.getElementById("inc-h").textContent = `Доля денег из области вырастет с ${nf0.format(sh(0))}% до ${nf0.format(sh(2))}%`;
+  document.getElementById("inc-p").innerHTML =
+    `Собственные доходы округа ${own[2] >= own[0] ? "растут" : "снижаются"} с ${short(own[0])} до ${short(own[2])} (${sgnPct(own[2], own[0])}), в основном за счёт НДФЛ (${sgnPct(ndfl[2], ndfl[0])}) и налогов малого бизнеса (${sgnPct(usn[2], usn[0])}). ` +
+    `Земельный налог, крупнейший собственный источник в 2026 году, к 2028 году ${land[2] < land[0] ? "снижается" : "меняется"} на ${nf0.format(Math.abs(land[2] / land[0] - 1) * 100)}%. ` +
+    `Субсидии из области в 2027 году вырастают в ${nf1.format(subs[1] / subs[0])} раза, в тот же год, когда начинается стройка очистных.` +
+    (mode.real ? ` Суммы в ценах 2026 года при инфляции ${nf1.format(mode.r * 100)}% в год.` : "");
+
+  const rows = document.getElementById("inc-rows");
+  rows.replaceChildren();
+  const maxI = Math.max(...INC.flatMap(x => x.v));
+  IG.forEach(([gname, c], g) => {
+    rows.append(el("div", "igroup", `<i class="sw" style="background:var(${c})"></i>${gname}`));
+    INC.filter(x => x.g === g).sort((a, b) => b.v[0] - a.v[0]).forEach(d => {
+      const v = adj(d.v), ratio = v[2] / v[0];
+      const row = el("div", "yrow");
+      row.innerHTML = `<span class="name">${d.n}</span><span class="ybars ytarget" tabindex="0">${v.map((x, i) =>
+        `<span class="yb" style="width:${x / maxI * 100}%;background:var(--y${String(YRS[i]).slice(2)})"></span>`).join("")}</span>
+        <span class="delta${ratio >= 2 ? " up" : ""}">${deltaLabel(ratio)}</span>`;
+      bindTip(row.querySelector(".ybars"), `<b>${d.full}</b>${mode.real ? "<br>в ценах 2026" : ""}<br>${v.map((x, i) => `${YRS[i]}: <span class="tv">${short(x)}</span> ₽ · ${pct(x, tot[i])}`).join("<br>")}`);
+      rows.append(row);
+    });
+  });
+}
 
 // flows
 const IN = [["Доходы бюджета", 18351151.5, "--s1"], ["Кредиты банков получены", 7365238.0, "--s2"], ["Бюджетный кредит получен", 1173657.0, "--s3"]];
