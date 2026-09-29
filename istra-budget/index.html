@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Расходы бюджета Истры 2026–2028</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+/* Layout: одна колонка ~880px, как пояснительная записка: сводка → куда идут деньги → динамика → разбор строк источников */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --ink: #0f1522;
+  --ink-2: #4a5263;
+  --muted: #7b8394;
+  --line: #e0e4eb;
+  --base: #c3c8d2;
+  --bar: #2a78d6;
+  --bar-soft: #d6e5f8;
+  --sun: #b57a00;
+  --sun-soft: #fbefd4;
+  --y26: #86b6ef; --y27: #2a78d6; --y28: #104281;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --rest: #8a93a3;
+  --tip-bg: #0f1522; --tip-fg: #ffffff;
+  --display: "Unbounded", "Golos Text", system-ui, sans-serif;
+  --body: "Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0d1017; --surface: #161b24; --ink: #f2f4f8; --ink-2: #b9c0cc; --muted: #8a93a3;
+  --line: #262d3a; --base: #3a4252; --bar: #3987e5; --bar-soft: #1d2d45; --sun: #e0a526; --sun-soft: #33280f;
+  --y26: #9ec5f4; --y27: #3987e5; --y28: #1c5cab;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --rest: #6c7586;
+  --tip-bg: #f2f4f8; --tip-fg: #0f1522; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0d1017; --surface: #161b24; --ink: #f2f4f8; --ink-2: #b9c0cc; --muted: #8a93a3;
+  --line: #262d3a; --base: #3a4252; --bar: #3987e5; --bar-soft: #1d2d45; --sun: #e0a526; --sun-soft: #33280f;
+  --y26: #9ec5f4; --y27: #3987e5; --y28: #1c5cab;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --rest: #6c7586;
+  --tip-bg: #f2f4f8; --tip-fg: #0f1522; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; -webkit-text-size-adjust: 100%; background: var(--bg); color: var(--ink); font: 400 15px/1.55 var(--body); }
+.wrap { max-width: 880px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 56px; }
+h1, h2 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(26px, 5vw, 40px); line-height: 1.1; }
+h2 { font-size: clamp(19px, 3.2vw, 24px); line-height: 1.2; }
+p { margin: 0; max-width: 66ch; }
+.eyebrow { font: 500 12px/1.3 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lead { color: var(--ink-2); font-size: 16px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+header { display: grid; gap: 14px; }
+section { display: grid; gap: 18px; }
+.sec-head { display: grid; gap: 8px; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.kpi .v { font-family: var(--display); font-weight: 500; font-size: 28px; line-height: 1.15; }
+.kpi .v small { font-family: var(--body); font-size: 14px; font-weight: 500; color: var(--ink-2); margin-left: 4px; }
+.kpi .d { color: var(--ink-2); font-size: 13px; }
+.kpi.def .v { color: var(--sun); }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.hint { font-size: 13px; color: var(--muted); }
+
+/* ranked bars */
+.rank { display: grid; gap: 2px; }
+.row { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 4.2rem; gap: 14px; align-items: center; padding: 7px 8px; border-radius: 8px; cursor: pointer; border: 0; background: none; color: inherit; font: inherit; text-align: left; width: 100%; }
+.row:hover, .row:focus-visible { background: var(--bg); }
+.row:focus-visible { outline: 2px solid var(--bar); outline-offset: 1px; }
+.row .name { font-weight: 500; font-size: 14px; line-height: 1.3; display: flex; gap: 6px; align-items: baseline; }
+.row .name .chev { color: var(--muted); font-size: 11px; transition: transform .15s; flex: none; }
+.row[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.track { position: relative; height: 20px; display: flex; align-items: center; gap: 8px; }
+.fill { height: 12px; background: var(--bar); border-radius: 0 4px 4px 0; min-width: 2px; }
+.row.hl .fill { background: var(--sun); }
+.track .val { font: 500 13px var(--mono); color: var(--ink); white-space: nowrap; }
+.share { font: 500 13px var(--mono); color: var(--ink-2); text-align: right; }
+.subs { display: grid; gap: 2px; padding: 2px 8px 10px 28px; }
+.subs[hidden] { display: none !important; }
+.sub { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) 4.2rem; gap: 14px; align-items: center; font-size: 13px; color: var(--ink-2); padding: 3px 0; }
+.sub .fill { height: 6px; background: var(--bar-soft); border: 1px solid var(--bar); border-left: 0; }
+.sub .val { font-size: 12px; color: var(--ink-2); }
+
+/* multi-year */
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.yrow { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 5.2rem; gap: 14px; align-items: center; padding: 8px; border-top: 1px solid var(--line); }
+.yrow:first-of-type { border-top: 0; }
+.yrow .name { font-size: 14px; font-weight: 500; line-height: 1.3; }
+.ybars { display: grid; gap: 2px; }
+.yb { height: 7px; border-radius: 0 3px 3px 0; min-width: 2px; }
+.ytarget { padding-block: 3px; cursor: default; }
+.delta { font: 500 13px var(--mono); text-align: right; color: var(--ink-2); }
+.delta.up { color: var(--sun); font-weight: 500; }
+.notes { display: grid; gap: 10px; }
+.note { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; background: var(--sun-soft); border-radius: 10px; padding: 14px 16px; font-size: 14px; }
+.note b.tag { font: 500 12px var(--mono); color: var(--sun); white-space: nowrap; padding-top: 2px; }
+
+/* flows */
+.flow { display: grid; gap: 22px; }
+.fl { display: grid; gap: 8px; }
+.fl-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.fl-head .t { font-weight: 600; }
+.fl-head .code { font: 400 12px var(--mono); color: var(--muted); }
+.stack { display: flex; gap: 2px; height: 30px; }
+.seg { height: 100%; position: relative; cursor: default; }
+.seg:first-child { border-radius: 4px 0 0 4px; }
+.seg:last-child { border-radius: 0 4px 4px 0; }
+.seg.gap { background: repeating-linear-gradient(135deg, var(--sun) 0 2px, transparent 2px 6px); outline: 1.5px solid var(--sun); outline-offset: -1.5px; }
+.seg.ghost { background: transparent; }
+.parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 6px 18px; font-size: 13px; color: var(--ink-2); }
+.parts div { display: flex; gap: 8px; align-items: center; }
+.parts .num { color: var(--ink); margin-left: auto; }
+.eq { font: 400 13.5px/1.7 var(--mono); background: var(--bg); border-radius: 10px; padding: 14px 16px; overflow-x: auto; color: var(--ink-2); }
+.eq b { color: var(--ink); font-weight: 500; }
+.eq .res { color: var(--sun); font-weight: 500; }
+.explain { display: grid; gap: 12px; }
+.explain p b { font-weight: 600; }
+ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 8px; max-width: 66ch; }
+
+table.t { border-collapse: collapse; width: 100%; font-size: 13px; }
+table.t th, table.t td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+table.t th:first-child, table.t td:first-child { text-align: left; white-space: normal; }
+table.t th { font-weight: 500; color: var(--muted); font-size: 12px; }
+table.t td { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+table.t td:first-child { font-family: var(--body); }
+.tscroll { overflow-x: auto; }
+details summary { cursor: pointer; font-size: 14px; color: var(--ink-2); }
+details[open] summary { margin-bottom: 10px; }
+
+footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 18px; }
+
+#tip { position: fixed; z-index: 10; pointer-events: none; background: var(--tip-bg); color: var(--tip-fg); padding: 8px 10px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; max-width: 280px; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+#tip .tv { font-family: var(--mono); }
+
+@media (max-width: 620px) {
+  .row, .yrow { grid-template-columns: minmax(0, 1fr) 3.6rem; }
+  .row .name, .yrow .name { grid-column: 1 / -1; }
+  .sub { grid-template-columns: minmax(0, 1fr) 3.6rem; }
+  .sub > span:first-child { grid-column: 1 / -1; }
+  .card { padding: 14px; }
+  .subs { padding-left: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+.ctl { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; justify-content: space-between; }
+.seg-ctl { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--bg); }
+.seg-ctl button { border: 0; background: none; color: var(--ink-2); font: 500 13px var(--body); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+.seg-ctl button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.seg-ctl button:focus-visible, .infl input:focus-visible { outline: 2px solid var(--bar); outline-offset: 1px; }
+.infl { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.infl input { width: 4.2rem; font: 500 13px var(--mono); padding: 5px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--ink); }
+.infl[aria-disabled="true"] { opacity: .45; }
+.realnote { font-size: 13px; color: var(--ink-2); background: var(--bg); border-radius: 8px; padding: 10px 12px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Муниципальный округ Истра · решение № 1/10 от 23.09.2026</div>
+    <h1>Куда идут деньги бюджета Истры в 2026–2028</h1>
+    <p class="lead">Уточнённый бюджет после сентябрьских поправок. Все суммы из приложений 1, 4, 6 и 7 к решению, в номинальных рублях с округлением. Для 2027–2028 годов есть пересчёт в ценах 2026 года.</p>
+    <div class="kpis">
+      <div class="kpi"><div class="eyebrow">Расходы 2026</div><div class="v">18,97<small>млрд ₽</small></div><div class="d">18 967 129,5 тыс. ₽</div></div>
+      <div class="kpi"><div class="eyebrow">Доходы 2026</div><div class="v">18,35<small>млрд ₽</small></div><div class="d">из них 8,04 млрд (44%) — трансферты из области и центра</div></div>
+      <div class="kpi def"><div class="eyebrow">Дефицит 2026</div><div class="v">616<small>млн ₽</small></div><div class="d">453,5 млн — новый долг, 162,5 млн — остатки на счёте</div></div>
+      <div class="kpi"><div class="eyebrow">Долг на 1.01.2027</div><div class="v">3,57<small>млрд ₽</small></div><div class="d">верхний предел; на проценты в 2026 уйдёт 473 млн</div></div>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Приложение 4 · 2026 год</div>
+      <h2>ЖКХ и образование забирают две трети расходов</h2>
+      <p class="hint">Разделы бюджетной классификации по убыванию. Нажмите на строку, чтобы раскрыть подразделы.</p>
+    </div>
+    <div class="card"><div class="rank" id="rank"></div></div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Приложение 4 · 2026 → 2028</div>
+      <h2>С 2027 года главная статья — очистные сооружения</h2>
+      <p class="hint">Три полосы на раздел: по одной на год, в одной шкале. Справа изменение 2028 к 2026. Переключатель пересчитывает 2027 и 2028 годы в цены 2026 года по заданной инфляции; по умолчанию 4% — цель Банка России.</p>
+    </div>
+    <div class="card" style="display:grid;gap:14px">
+      <div class="ctl">
+        <div class="seg-ctl" role="group" aria-label="Режим сумм">
+          <button type="button" id="m-nom" aria-pressed="true">Номинально</button>
+          <button type="button" id="m-real" aria-pressed="false">В ценах 2026</button>
+        </div>
+        <label class="infl" id="infl-wrap" aria-disabled="true">Инфляция в год <input id="infl" type="number" min="0" max="30" step="0.5" value="4" disabled> %</label>
+      </div>
+      <div class="legend" id="legend"></div>
+      <div id="years"></div>
+      <div class="realnote" id="realnote"></div>
+    </div>
+    <div class="notes">
+      <div class="note"><b class="tag">06 · ×40</b><span><b>Охрана окружающей среды</b> растёт со 166 млн до 5,9–6,6 млрд. Почти всё это бюджетные инвестиции в строительство очистных сооружений в Дедовске и реконструкцию очистных в Павловской Слободе: 5,04 млрд в 2027 и 6,01 млрд в 2028 (приложение 7).</span></div>
+      <div class="note"><b class="tag">05 01 · ×6</b><span><b>Жилищное хозяйство</b> в 2028 году подскакивает до 1,41 млрд: 1,36 млрд заложено на переселение из аварийного жилья в посёлке Снегири.</span></div>
+      <div class="note"><b class="tag">05 03 · −50%</b><span><b>Благоустройство</b> после 4,59 млрд в 2026 году падает до 2,3–2,4 млрд. Главная причина — программа «Формирование современной комфортной городской среды»: 3,03 млрд в 2026 году и 1,18 млрд в 2027.</span></div>
+      <div class="note"><b class="tag">01 04 · −70%</b><span><b>Администрация</b> в 2027 году стоит 211 млн против 705 млн сейчас. Плановые годы обычно доуточняют ближе к делу, так что эту цифру стоит считать предварительной.</span></div>
+    </div>
+    <p class="hint">В 2027 и 2028 годах расходы в приложении 4 меньше итога в решении на условно утверждённые расходы: 266,3 млн и 858,3 млн ₽. Это резерв, который по Бюджетному кодексу не распределяют по статьям заранее. С ним расходы равны доходам: 20,75 и 22,05 млрд.</p>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="eyebrow">Приложение 6 · код 01 05 02 01 14</div>
+      <h2>Что значат −26,9 и 27,1 млрд в источниках финансирования</h2>
+    </div>
+    <div class="explain">
+      <p>Это не отдельные деньги и не второй бюджет. Все средства округа лежат на одном счёте в казначействе, и эти две строки показывают <b>полный оборот этого счёта за год</b>. По правилам бюджетной классификации всё, что поступает на счёт, записывается как «увеличение остатков» со знаком минус, а всё, что уходит со счёта, как «уменьшение остатков» со знаком плюс.</p>
+    </div>
+    <div class="card flow" id="flow"></div>
+    <div class="eq">
+      <b>Увеличение остатков</b> = −(доходы 18 351 151,5 + кредиты банков 7 365 238,0 + бюджетный кредит 1 173 657,0) = <b>−26 890 046,5</b><br>
+      <b>Уменьшение остатков</b> = расходы 18 967 129,5 + погашение кредитов банков 6 761 766,9 + погашение бюджетного кредита 1 323 657,0 = <b>27 052 553,4</b><br>
+      Сумма двух строк = <span class="res">162 506,9 тыс. ₽</span> — столько округ потратит сверх поступлений из того, что было на счёте на 1 января
+    </div>
+    <div class="explain">
+      <ol class="steps">
+        <li><b>Почему оборот на 8,5 млрд больше бюджета.</b> Кредиты банков в основном рефинансируют: в 2026 году берут 7,37 млрд и отдают 6,76 млрд старого долга. Бюджетный кредит из области (1,17 млрд) — такое же замещение: гасят 1,32 млрд. Деньги проходят через счёт, но на расходы не идут.</li>
+        <li><b>Как из этих строк собирается дефицит 616 млн.</b> Чистый прирост долга банкам +603,5 млн, чистое погашение бюджетного кредита −150 млн, снижение остатков на счёте +162,5 млн. Итого 616,0 млн. Решение прямо говорит, что 162 506,9 тыс. ₽ из остатков направляются на покрытие дефицита.</li>
+        <li><b>2027 и 2028 годы.</b> Обе строки там равны друг другу по модулю (28,41 и 29,52 млрд), значит остатки не трогают и бюджет сбалансирован.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <details>
+      <summary id="tbl-sum">Таблица по разделам, тыс. ₽</summary>
+      <div class="tscroll"><table class="t" id="tbl"></table></div>
+    </details>
+  </section>
+
+  <footer>
+    <div>Источники: решение Совета депутатов муниципального округа Истра от 23.09.2026 № 1/10 и приложения 1, 4, 5, 6, 7 к нему (редакция решения от 25.12.2025 № 1/21).</div>
+    <div>Разделы 01–13 по классификации расходов бюджетов РФ. Доли посчитаны от 18 967,1 млн ₽.</div>
+  </footer>
+</div>
+<div id="tip" hidden></div>
+
+<script>
+const D = [
+  { rz:"05", n:"ЖКХ", full:"Жилищно-коммунальное хозяйство", v:[6659899049.06,4645136427.39,4504449396.39], subs:[
+    ["Благоустройство",[4586971371.67,2420796053.64,2311162107.68]],
+    ["Коммунальное хозяйство",[1800097580.24,1976817436.65,782224876.1]],
+    ["Жилищное хозяйство",[233791097.15,247522937.1,1411062412.61]],
+    ["Другие вопросы ЖКХ",[39039000,0,0]]]},
+  { rz:"07", n:"Образование", full:"Образование", v:[6414780659.1,6143693221.44,6154160795], subs:[
+    ["Общее образование (школы)",[3977372030.99,3991552816.95,3989149341.28]],
+    ["Дошкольное образование",[1804154779.84,1664564330.03,1678915233.72]],
+    ["Дополнительное образование детей",[497267193.46,425342872.8,421863018.34]],
+    ["Молодёжная политика",[80335375.35,43079200,43079200]],
+    ["Другие вопросы образования",[55116179.46,18554001.66,20554001.66]],
+    ["Переподготовка и повышение квалификации",[535100,600000,600000]]]},
+  { rz:"01", n:"Общегосударственные вопросы", full:"Общегосударственные вопросы", v:[2001010426.99,871548642.16,1166690132.95], subs:[
+    ["Другие общегосударственные вопросы",[1208846350.69,577320990,590334930]],
+    ["Администрация округа",[705315576.3,211142252.16,493269802.95]],
+    ["Финансовые органы и надзор",[53020200,46120200,46120200]],
+    ["Глава округа",[21832700,21832700,21832700]],
+    ["Совет депутатов",[10995600,13132500,13132500]],
+    ["Резервный фонд",[1000000,2000000,2000000]]]},
+  { rz:"04", n:"Национальная экономика", full:"Национальная экономика", v:[1637039050.27,1204262621,1104671289.71], subs:[
+    ["Дорожное хозяйство (дорожный фонд)",[1459559388.61,1014818650,1009314219.71]],
+    ["Транспорт",[145340813.67,168486271,73754070]],
+    ["Другие вопросы экономики",[20353649.99,9405000,9405000]],
+    ["Сельское хозяйство",[6536000,6536000,6536000]],
+    ["Водное хозяйство",[5249198,5016700,5662000]]]},
+  { rz:"08", n:"Культура", full:"Культура, кинематография", v:[696864095.12,673122313,669101262.12], subs:[
+    ["Культура",[696864095.12,673122313,669101262.12]]]},
+  { rz:"13", n:"Проценты по долгу", full:"Обслуживание муниципального долга", v:[473207468.13,321853911,321853911], subs:[
+    ["Обслуживание внутреннего долга",[473207468.13,321853911,321853911]]]},
+  { rz:"11", n:"Физкультура и спорт", full:"Физическая культура и спорт", v:[388733589.36,364510250,349571770], subs:[
+    ["Массовый спорт",[302230210.56,286735548,272686900]],
+    ["Физическая культура",[86503378.8,77774702,76884870]]]},
+  { rz:"10", n:"Социальная политика", full:"Социальная политика", v:[263428029.64,111593998.83,114494900], subs:[
+    ["Социальное обеспечение населения",[164159856.92,13040000,13040000]],
+    ["Охрана семьи и детства",[81192172.72,80477998.83,83378900]],
+    ["Пенсионное обеспечение",[18076000,18076000,18076000]]]},
+  { rz:"03", n:"Безопасность", full:"Национальная безопасность и правоохранительная деятельность", v:[167246316.27,149173905.76,138150710], subs:[
+    ["Гражданская оборона",[84054031.23,95029805.08,70158090]],
+    ["Защита от ЧС, пожарная безопасность",[57347304.64,30367000,52367000]],
+    ["Другие вопросы безопасности",[25844980.4,23777100.68,15625620]]]},
+  { rz:"06", n:"Охрана окружающей среды", full:"Охрана окружающей среды", hl:true, v:[166361452.43,5912977085.86,6593323730], subs:[
+    ["Сбор отходов и очистка сточных вод",[108698320,5788605775.86,6534452420]],
+    ["Другие вопросы охраны среды",[57663132.43,124371310,58871310]]]},
+  { rz:"12", n:"СМИ", full:"Средства массовой информации", v:[98559354.13,81278260,78500020], subs:[
+    ["Телевидение и радиовещание",[49279842.97,38404600,38404600]],
+    ["Периодическая печать",[49279511.16,42873660,40095420]]]}
+];
+const TOT = [18967129490.5, 20479150636.44, 21194967917.17];
+const YRS = [2026, 2027, 2028];
+
+const nf1 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const nf2 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const nf0 = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 0 });
+const short = r => r >= 1e9 ? nf2.format(r / 1e9) + " млрд" : r >= 1e6 ? nf0.format(r / 1e6) + " млн" : r === 0 ? "0" : nf1.format(r / 1e6) + " млн";
+const th = r => nf1.format(r / 1000);
+const pct = (a, b) => { const p = a / b * 100; return (p < 1 ? nf1.format(p) : nf0.format(p)) + "%"; };
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+
+const tip = document.getElementById("tip");
+function showTip(e, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const r = tip.getBoundingClientRect();
+  let x, y;
+  if (e.clientX != null && e.type.startsWith("pointer")) { x = e.clientX + 14; y = e.clientY + 14; }
+  else { const b = e.currentTarget.getBoundingClientRect(); x = b.left; y = b.bottom + 6; }
+  if (x + r.width > innerWidth - 8) x = innerWidth - r.width - 8;
+  if (y + r.height > innerHeight - 8) y = y - r.height - 28;
+  tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+}
+const hideTip = () => { tip.hidden = true; };
+function bindTip(node, html) {
+  node.addEventListener("pointermove", e => showTip(e, html));
+  node.addEventListener("pointerleave", hideTip);
+  node.addEventListener("focus", e => showTip(e, html));
+  node.addEventListener("blur", hideTip);
+}
+
+// ranked 2026
+const rank = document.getElementById("rank");
+const max26 = Math.max(...D.map(d => d.v[0]));
+[...D].sort((a, b) => b.v[0] - a.v[0]).forEach((d, i) => {
+  const btn = el("button", "row" + (d.hl ? " hl" : ""));
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = `<span class="name"><span class="chev">▶</span><span>${d.n}</span></span>
+    <span class="track"><span class="fill" style="width:${d.v[0] / max26 * 82}%"></span><span class="val">${short(d.v[0])}</span></span>
+    <span class="share">${pct(d.v[0], TOT[0])}</span>`;
+  bindTip(btn, `<b>${d.rz} · ${d.full}</b><br><span class="tv">${th(d.v[0])}</span> тыс. ₽<br>${pct(d.v[0], TOT[0])} всех расходов 2026`);
+  const subs = el("div", "subs"); subs.hidden = true; subs.id = "subs-" + d.rz;
+  btn.setAttribute("aria-controls", subs.id);
+  d.subs.forEach(([name, v]) => {
+    const s = el("div", "sub", `<span>${name}</span><span class="track"><span class="fill" style="width:${v[0] / max26 * 82}%"></span><span class="val">${short(v[0])}</span></span><span class="share">${pct(v[0], TOT[0])}</span>`);
+    subs.append(s);
+  });
+  btn.addEventListener("click", () => { const o = btn.getAttribute("aria-expanded") === "true"; btn.setAttribute("aria-expanded", String(!o)); subs.hidden = o; });
+  rank.append(btn, subs);
+});
+
+// multi-year
+const years = document.getElementById("years");
+const maxY = Math.max(...D.flatMap(d => d.v));
+const mode = { real: false, r: 0.04 };
+const defl = i => mode.real ? Math.pow(1 + mode.r, i) : 1;
+const adj = v => v.map((x, i) => x / defl(i));
+const deltaLabel = ratio => ratio >= 2 ? "×" + nf0.format(ratio) : (ratio >= 1 ? "+" : "−") + nf0.format(Math.abs(ratio - 1) * 100) + "%";
+function renderYears() {
+  const tot = adj(TOT);
+  const unit = mode.real ? " в ценах 2026" : "";
+  document.getElementById("legend").innerHTML = YRS.map((y, i) =>
+    `<span><i class="sw" style="background:var(--y${String(y).slice(2)})"></i>${y} · ${short(tot[i])}</span>`).join("");
+  years.replaceChildren();
+  [...D].sort((a, b) => b.v[0] - a.v[0]).forEach(d => {
+    const v = adj(d.v);
+    const ratio = v[2] / v[0];
+    const row = el("div", "yrow");
+    row.innerHTML = `<span class="name">${d.n}</span><span class="ybars ytarget" tabindex="0">${v.map((x, i) =>
+      `<span class="yb" style="width:${x / maxY * 100}%;background:var(--y${String(YRS[i]).slice(2)})"></span>`).join("")}</span>
+      <span class="delta${ratio >= 2 ? " up" : ""}">${deltaLabel(ratio)}</span>`;
+    bindTip(row.querySelector(".ybars"), `<b>${d.rz} · ${d.full}</b>${unit ? "<br>" + unit.trim() : ""}<br>${v.map((x, i) => `${YRS[i]}: <span class="tv">${short(x)}</span> ₽ · ${pct(x, tot[i])}`).join("<br>")}`);
+    years.append(row);
+  });
+  const g = TOT[2] / TOT[0] - 1, gr = tot[2] / tot[0] - 1;
+  const rp = nf1.format(mode.r * 100);
+  document.getElementById("realnote").innerHTML = mode.real
+    ? `При инфляции ${rp}% в год рубль 2028 года стоит ${nf2.format(1 / defl(2))} рубля 2026 года. Номинальный рост расходов на ${nf0.format(g * 100)}% в реальных деньгах превращается в ${gr >= 0 ? "+" : "−"}${nf1.format(Math.abs(gr) * 100)}%, и почти весь этот прирост уходит на очистные.`
+    : `Суммы в номинальных рублях: 2027 и 2028 годы заложены в ценах тех лет. Номинально расходы растут на ${nf0.format(g * 100)}% за два года; переключите на «В ценах 2026», чтобы убрать инфляцию.`;
+  renderTable();
+}
+function setMode(real) {
+  mode.real = real;
+  document.getElementById("m-nom").setAttribute("aria-pressed", String(!real));
+  document.getElementById("m-real").setAttribute("aria-pressed", String(real));
+  const inp = document.getElementById("infl");
+  inp.disabled = !real;
+  document.getElementById("infl-wrap").setAttribute("aria-disabled", String(!real));
+  renderYears();
+}
+document.getElementById("m-nom").addEventListener("click", () => setMode(false));
+document.getElementById("m-real").addEventListener("click", () => setMode(true));
+document.getElementById("infl").addEventListener("input", e => {
+  const x = parseFloat(String(e.target.value).replace(",", "."));
+  if (Number.isFinite(x) && x >= 0 && x <= 30) { mode.r = x / 100; renderYears(); }
+});
+
+// flows
+const IN = [["Доходы бюджета", 18351151.5, "--s1"], ["Кредиты банков получены", 7365238.0, "--s2"], ["Бюджетный кредит получен", 1173657.0, "--s3"]];
+const OUT = [["Расходы бюджета", 18967129.5, "--s1"], ["Кредиты банков погашены", 6761766.9, "--s2"], ["Бюджетный кредит погашен", 1323657.0, "--s3"]];
+const GAP = 162506.9;
+const scale = 27052553.4;
+const flow = document.getElementById("flow");
+function flowBlock(title, code, total, parts, gap) {
+  const b = el("div", "fl");
+  b.append(el("div", "fl-head", `<span class="t">${title}</span><span class="code">${code} · <span class="num">${th(total * 1000)}</span> тыс. ₽</span>`));
+  const st = el("div", "stack");
+  parts.forEach(([n, v, c]) => {
+    const s = el("span", "seg"); s.style.width = (v / scale * 100) + "%"; s.style.background = `var(${c})`; s.tabIndex = 0;
+    bindTip(s, `<b>${n}</b><br><span class="tv">${th(v * 1000)}</span> тыс. ₽`); st.append(s);
+  });
+  if (gap) {
+    const s = el("span", "seg gap"); s.style.width = (gap / scale * 100) + "%"; s.tabIndex = 0;
+    bindTip(s, `<b>Взято из остатков на счёте</b><br><span class="tv">${th(gap * 1000)}</span> тыс. ₽`); st.append(s);
+  }
+  b.append(st);
+  const p = el("div", "parts");
+  parts.forEach(([n, v, c]) => p.append(el("div", "", `<i class="sw" style="background:var(${c})"></i><span>${n}</span><span class="num">${short(v * 1000)}</span>`)));
+  if (gap) p.append(el("div", "", `<i class="sw" style="background:repeating-linear-gradient(135deg,var(--sun) 0 2px,transparent 2px 5px);outline:1.5px solid var(--sun);outline-offset:-1.5px"></i><span>Из остатков на 1 января</span><span class="num">${short(gap * 1000)}</span>`));
+  b.append(p);
+  return b;
+}
+flow.append(
+  flowBlock("Пришло на счёт = «увеличение остатков»", "510", 26890046.5, IN, GAP),
+  flowBlock("Ушло со счёта = «уменьшение остатков»", "610", 27052553.4, OUT, 0)
+);
+
+// table
+function renderTable() {
+  document.getElementById("tbl-sum").textContent = "Таблица по разделам, тыс. ₽" + (mode.real ? `, в ценах 2026 (инфляция ${nf1.format(mode.r * 100)}%)` : "");
+  document.getElementById("tbl").innerHTML = `<thead><tr><th>Раздел</th><th>2026</th><th>2027</th><th>2028</th></tr></thead><tbody>${
+    [...D].sort((a, b) => a.rz.localeCompare(b.rz)).map(d => `<tr><td>${d.rz} · ${d.full}</td>${adj(d.v).map(v => `<td>${th(v)}</td>`).join("")}</tr>`).join("")
+  }<tr><td><b>Итого</b></td>${adj(TOT).map(v => `<td><b>${th(v)}</b></td>`).join("")}</tr></tbody>`;
+}
+renderYears();
+</script>
+</body>
+</html>
