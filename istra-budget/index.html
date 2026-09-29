@@ -135,6 +135,8 @@ table.t td:first-child { font-family: var(--body); }
 details summary { cursor: pointer; font-size: 14px; color: var(--ink-2); }
 details[open] summary { margin-bottom: 10px; }
 
+a { color: var(--bar); text-underline-offset: 2px; }
+a:focus-visible { outline: 2px solid var(--bar); outline-offset: 2px; border-radius: 2px; }
 footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border-top: 1px solid var(--line); padding-top: 18px; }
 
 #tip { position: fixed; z-index: 10; pointer-events: none; background: var(--tip-bg); color: var(--tip-fg); padding: 8px 10px; border-radius: 8px; font-size: 12.5px; line-height: 1.45; max-width: 280px; box-shadow: 0 6px 20px rgba(0,0,0,.18); }
@@ -205,7 +207,7 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
   <header>
     <div class="eyebrow">Муниципальный округ Истра · решение № 1/10 от 23.09.2026</div>
     <h1>Бюджет Истры: что меняется к 2027 и 2028 году</h1>
-    <p class="lead">Расходы по разделам в уточнённом бюджете после сентябрьских поправок, 2026 год против планов на 2027 и 2028 годы. Суммы из приложений 4, 6 и 7 к решению.</p>
+    <p class="lead">Расходы по разделам в уточнённом бюджете после сентябрьских поправок, 2026 год против планов на 2027 и 2028 годы. Суммы из приложений 4, 6 и 7 к <a href="https://istra-adm.ru/docs/doc/reshenie-soveta-deputatov-munitsipalnogo-okruga-istra-ot-23-sentyabrya-2026-goda-no-1-10-o-vnesenii-iz-518821" target="_blank" rel="noopener">решению на сайте администрации</a>.</p>
   </header>
 
   <div class="ctl sticky">
@@ -213,7 +215,7 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
       <button type="button" id="m-nom" aria-pressed="true">Номинально</button>
       <button type="button" id="m-real" aria-pressed="false">В ценах 2026</button>
     </div>
-    <label class="infl" id="infl-wrap" aria-disabled="true">Инфляция в год <input id="infl" type="number" min="0" max="30" step="0.5" value="4" disabled> %</label>
+    <label class="infl" id="infl-wrap" aria-disabled="true">Инфляция в год <input id="infl" type="number" min="0" max="30" step="0.5" value="6" disabled> %</label>
   </div>
 
   <section>
@@ -312,7 +314,7 @@ footer { font-size: 12.5px; color: var(--muted); display: grid; gap: 6px; border
   </section>
 
   <footer>
-    <div>Источники: решение Совета депутатов муниципального округа Истра от 23.09.2026 № 1/10 и приложения 1, 4, 5, 6, 7 к нему (редакция решения от 25.12.2025 № 1/21).</div>
+    <div>Источник: <a href="https://istra-adm.ru/docs/doc/reshenie-soveta-deputatov-munitsipalnogo-okruga-istra-ot-23-sentyabrya-2026-goda-no-1-10-o-vnesenii-iz-518821" target="_blank" rel="noopener">решение Совета депутатов муниципального округа Истра от 23.09.2026 № 1/10</a> на сайте администрации округа, приложения 1, 4, 5, 6, 7 к нему (редакция решения от 25.12.2025 № 1/21).</div>
     <div>Разделы 01–13 по классификации расходов бюджетов РФ. Суммы номинальные; в режиме «В ценах 2026» суммы 2027 и 2028 годов делятся на накопленную инфляцию.</div>
   </footer>
 </div>
@@ -420,7 +422,7 @@ const max26 = Math.max(...D.map(d => d.v[0]));
 // multi-year
 const years = document.getElementById("years");
 const maxY = Math.max(...D.flatMap(d => d.v));
-const mode = { real: false, r: 0.04 };
+const mode = { real: false, r: 0.06 };
 const defl = i => mode.real ? Math.pow(1 + mode.r, i) : 1;
 const adj = v => v.map((x, i) => x / defl(i));
 const deltaLabel = ratio => ratio >= 2 ? "×" + nf0.format(ratio) : (ratio >= 1 ? "+" : "−") + nf0.format(Math.abs(ratio - 1) * 100) + "%";
