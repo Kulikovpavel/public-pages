@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Прогноз Подмосковья 2027–2029</title>
+<meta name="description" content="Самое важное из прогноза социально-экономического развития Московской области на 2027–2029 годы: постановление Правительства Московской области № 1322-ПП/37 от 20.10.2026">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root { --letterbox: #0B1222; --ui: #D5DAE1; --ui-muted: #8A94A6; --bar: 56px; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--letterbox); }
+body { padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); font-family: Inter, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+.viewport { position: fixed; inset: 0 0 var(--bar) 0; display: flex; align-items: center; justify-content: center; }
+.frame { position: relative; overflow: hidden; flex: none; box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35); }
+.stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.stage > section { position: absolute; inset: 0; width: 1920px; height: 1080px; overflow: hidden; visibility: hidden; opacity: 0; transition: opacity 0.25s ease, visibility 0s linear 0.25s; }
+.stage > section.active { visibility: visible; opacity: 1; transition: opacity 0.25s ease; }
+.stage h1, .stage h2, .stage h3, .stage p, .stage ul, .stage ol, .stage table { margin: 0; }
+.stage h1 { font-size: 96px; font-weight: 600; line-height: 1.1; }
+.stage h2 { font-size: 64px; font-weight: 600; line-height: 1.15; }
+.stage h3 { font-size: 44px; font-weight: 600; line-height: 1.2; }
+.stage p { font-size: 32px; line-height: 1.4; }
+.stage ul, .stage ol { padding-left: 1.2em; }
+.stage table { border-collapse: collapse; }
+.stage th, .stage td { padding: 0.35em 0.6em; border-bottom: 2px solid #D9DEE5; text-align: left; }
+.stage th { font-weight: 600; }
+.stage aside { display: none; }
+.controls { position: fixed; left: 0; right: 0; bottom: env(safe-area-inset-bottom, 0px); height: var(--bar); display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 16px; color: var(--ui); font: 14px/1 Inter, Arial, sans-serif; }
+.controls button { appearance: none; border: 1px solid #2A3550; background: transparent; color: var(--ui); font: inherit; height: 36px; min-width: 36px; padding: 0 12px; border-radius: 8px; cursor: pointer; }
+.controls button:hover { background: #1A2440; }
+.controls button[aria-pressed="true"] { background: #F2B33D; border-color: #F2B33D; color: #14213D; }
+.counter { min-width: 64px; text-align: center; font-family: "JetBrains Mono", monospace; font-variant-numeric: tabular-nums; }
+.hint { color: var(--ui-muted); margin-left: 8px; }
+.notes { position: fixed; left: 50%; bottom: calc(var(--bar) + 12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); width: min(880px, calc(100vw - 32px)); max-height: 40vh; overflow: auto; background: #FBFBF8; color: #14213D; border-radius: 12px; padding: 16px 20px; font: 15px/1.55 Inter, Arial, sans-serif; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); }
+.notes[hidden] { display: none; }
+.notes strong { display: block; font: 600 12px/1.4 "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; color: #5B6475; margin-bottom: 6px; }
+@media (max-width: 640px) { .hint, #fullscreen { display: none; } .controls { gap: 8px; } .controls button { padding: 0 10px; } }
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { height: auto; overflow: visible; background: none; padding: 0; }
+  .viewport { position: static; display: block; }
+  .frame { width: auto !important; height: auto !important; box-shadow: none; overflow: visible; }
+  .stage { position: static; transform: none !important; width: auto; height: auto; }
+  .stage > section { position: relative; visibility: visible; opacity: 1; break-after: page; }
+  .controls, .notes { display: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="viewport">
+<div class="frame">
+<div class="stage" aria-live="polite">
+<section id="cover" data-transition="fade" style="background:#14213D;color:#FBFBF8;font-family:Inter, Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#F2B33D;letter-spacing:1px;text-transform:uppercase">Постановление Правительства Московской области № 1322-ПП/37 от 20.10.2026</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1.05;letter-spacing:-2px">Подмосковье 2027–2029</h1>
+<p style="font-size:44px;line-height:1.3;color:#D5DAE1;width:1300px">Прогноз социально-экономического развития: самое важное из 62 страниц</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:center">
+<p style="font-size:24px;font-weight:600;background:#F2B33D;color:#14213D;padding:12px 24px;border-radius:9999px">Вариант 2 — базовый</p>
+<p style="font-size:24px;font-weight:600;color:#FBFBF8;border:2px solid #5B6475;padding:12px 24px;border-radius:9999px">Вариант 1 — консервативный</p>
+<p style="font-size:24px;color:#B8C0CC">Цифры — по базовому варианту, если не сказано иное</p>
+</div>
+<aside>Источник: постановление Правительства Московской области от 20.10.2026 № 1322-ПП/37 «О прогнозе социально-экономического развития Московской области на среднесрочный период 2027–2029 годов». Внутри: само постановление, таблицы показателей по области и по муниципалитетам, пояснительная записка. Прогноз сделан в двух вариантах: консервативный (с учётом возможного ухудшения внешних условий) и базовый. Отчётные годы — 2024 и 2025, 2026 — оценка.</aside>
+</section>
+<section id="summary" data-transition="fade" style="background:#F2B33D;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Главное в шести цифрах</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">16,8</p>
+<p style="font-size:32px;line-height:1.35">трлн&#160;₽ — ВРП в 2029 году (10,9&#160;трлн в 2024-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">+2,6%</p>
+<p style="font-size:32px;line-height:1.35">в год — средний рост ВРП в 2027–2029 годах</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">11,7</p>
+<p style="font-size:32px;line-height:1.35">трлн&#160;₽ — отгрузка промышленности в 2029-м</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">2,7</p>
+<p style="font-size:32px;line-height:1.35">трлн&#160;₽ — инвестиции в основной капитал в 2029-м</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">163,6</p>
+<p style="font-size:32px;line-height:1.35">тыс.&#160;₽ — средняя зарплата в 2029-м</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">0,10%</p>
+<p style="font-size:32px;line-height:1.35">регистрируемая безработица в 2029-м</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#14213D">Главное · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#14213D">02 / 15</p></div>
+<aside>Все цифры — базовый вариант. ВРП: 16 760,7 млрд ₽ в 2029 году против 10 883,3 млрд в 2024-м; средний рост 2,6% в год в 2027–2029 (пояснительная записка, с. 40). Отгрузка промышленности — 11 743,2 млрд ₽ (с. 42). Инвестиции — 2,7 трлн ₽ (с. 49; в таблице 2 710,9 млрд). Зарплата — 163,6 тыс. ₽ (с. 52). Регистрируемая безработица — 0,10% (с. 51).</aside>
+</section>
+<section id="gdp" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">ВРП растёт медленнее, но растёт</h2>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:16px;width:960px">
+<p style="font-size:24px;color:#5B6475">Индекс физического объёма ВРП: прирост к предыдущему году</p>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:end">
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">+6,4%</p>
+<div style="width:112px;height:360px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2024</p>
+<p style="font-size:24px;color:#5B6475">отчёт</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">+2,6%</p>
+<div style="width:112px;height:146px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2025</p>
+<p style="font-size:24px;color:#5B6475">отчёт</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">+0,9%</p>
+<div style="width:112px;height:51px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2026</p>
+<p style="font-size:24px;color:#5B6475">оценка</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">+2,2%</p>
+<div style="width:112px;height:124px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2027</p>
+<p style="font-size:24px;color:#5B6475">прогноз</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">+2,6%</p>
+<div style="width:112px;height:146px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2028</p>
+<p style="font-size:24px;color:#5B6475">прогноз</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">+3,0%</p>
+<div style="width:112px;height:169px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2029</p>
+<p style="font-size:24px;color:#5B6475">прогноз</p>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">16,8&#160;трлн&#160;₽</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">ВРП в 2029 году по базовому варианту; в консервативном — 16,6&#160;трлн</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">3-е место</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">среди регионов России по ВРП: 10,9&#160;трлн&#160;₽ в 2024 году</p>
+</div>
+<p style="font-size:24px;line-height:1.4;color:#5B6475">Оценка 2026 года в таблице — 100,9%, в тексте записки — 101,9%. На графике — значение из таблицы.</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Экономика · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">03 / 15</p></div>
+<aside>Индекс физического объёма ВРП, % к предыдущему году: 106,4 (2024), 102,6 (2025), 100,9 (2026, оценка), 102,2 / 102,6 / 103,0 (2027–2029, базовый). Консервативный вариант: 101,9 / 102,3 / 102,7. В номинале: 10 883,3 млрд ₽ (2024) → 13 091,8 млрд (2026) → 16 760,7 млрд (2029, базовый). Причины замедления в 2026 году, по записке: долгая жёсткая денежно-кредитная политика, снижение инвестиционной активности, адаптация бизнеса к новым налоговым условиям (с. 39–40). Расхождение в документе: в таблице прирост ВРП за 2026 год — 100,9%, в тексте пояснительной записки — 101,9%.</aside>
+</section>
+<section id="structure" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Нет одной доминирующей отрасли</h2>
+<p style="font-size:32px;color:#5B6475">Доля видов деятельности в ВРП Московской области, 2024 год</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Промышленное производство</p>
+<div style="width:760px;height:44px;background:#14213D;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">24,2%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Оптовая и розничная торговля</p>
+<div style="width:625px;height:44px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">19,9%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Операции с недвижимостью</p>
+<div style="width:484px;height:44px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">15,4%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Транспортировка и хранение</p>
+<div style="width:223px;height:44px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">7,1%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Госуправление и соцобеспечение</p>
+<div style="width:192px;height:44px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">6,1%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Профессиональная, научная и техническая деятельность</p>
+<div style="width:170px;height:44px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">5,4%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:600px;font-size:32px;line-height:1.4">Строительство</p>
+<div style="width:160px;height:44px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">5,1%</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Экономика · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">04 / 15</p></div>
+<aside>Пояснительная записка, с. 39: структура экономики «отличается высокой степенью диверсификации». Прибыль организаций в 2024 году — 2 939,7 млрд ₽ (+1,1%); в её структуре обрабатывающие производства 28,5%, торговля 27,1%, недвижимость 9,9%, транспорт 6,7% (с. 40).</aside>
+</section>
+<section id="slowdown" data-transition="fade" style="background:#14213D;color:#FBFBF8;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">2026 — самый слабый год прогноза</h2>
+<div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">−7,1%</p>
+<p style="font-size:32px;line-height:1.35;color:#D5DAE1">прибыль организаций</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">−8,6%</p>
+<p style="font-size:32px;line-height:1.35;color:#D5DAE1">инвестиции в основной капитал</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">−3,7%</p>
+<p style="font-size:32px;line-height:1.35;color:#D5DAE1">объём строительных работ</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:120px;font-weight:800;line-height:1;letter-spacing:-2px">8,1</p>
+<p style="font-size:32px;line-height:1.35;color:#D5DAE1">млн&#160;м² жилья против 12,5&#160;млн в 2025-м</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<h3 style="font-family:Manrope, Arial, sans-serif;font-size:44px;font-weight:700;line-height:1.2;color:#F2B33D">Причины, которые называет правительство области</h3>
+<ul style="font-size:32px;line-height:1.4;color:#D5DAE1">
+<li>долгий период жёсткой денежно-кредитной политики и высокие ставки по кредитам</li>
+<li>повышение ставки НДС и новый порядок уплаты налога на прибыль</li>
+<li>осторожный потребительский спрос в условиях неопределённости</li>
+<li>рост тарифов, логистических издержек и цен на сырьё и комплектующие</li>
+<li>завершение инвестиционного цикла 2021–2024 годов (импортозамещение, адаптация к санкциям)</li>
+</ul>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B8C0CC">2026 год · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B8C0CC">05 / 15</p></div>
+<aside>Все цифры — оценка 2026 года к 2025-му. Прибыль: темп роста 92,9% (с. 40 записки). Инвестиции: индекс физического объёма 91,4%, 2 050,3 млрд ₽ (с. 47). Строительство: 877,4 млрд ₽, 96,3% в сопоставимых ценах (с. 49). Жильё: объём жилищного строительства 8 101,0 тыс. м² против 12 491,4 тыс. в 2025 году (таблица); за I полугодие 2026 года — 4,4 млн м², 67% к I полугодию 2025-го. Причины собраны из разделов о ВРП (с. 39–40), промышленности (с. 41) и инвестициях (с. 47).</aside>
+</section>
+<section id="industry" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Промышленность — главный мотор</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">7,8&#160;→&#160;11,7</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">трлн&#160;₽ отгрузки: 2025 → 2029 год</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">+7,6%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">в год — индекс промпроизводства в 2027–2029</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">≈90%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">приходится на обрабатывающие производства</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;gap:64px">
+<div style="display:flex;flex-direction:column;gap:16px;width:828px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Крупнейшие отрасли обработки, доля</p>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:380px;font-size:32px;line-height:1.4">Пищевые продукты</p>
+<div style="width:300px;height:40px;background:#14213D;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">24,1%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:380px;font-size:32px;line-height:1.4">Металлоизделия</p>
+<div style="width:235px;height:40px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">18,9%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:380px;font-size:32px;line-height:1.4">Резина и пластмассы</p>
+<div style="width:72px;height:40px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">5,8%</p>
+</div>
+<div style="display:flex;flex-direction:row;align-items:center;gap:24px">
+<p style="flex:none;width:380px;font-size:32px;line-height:1.4">Химия</p>
+<div style="width:71px;height:40px;background:#5B6475;border-radius:0 8px 8px 0"></div>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">5,7%</p>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Что поддерживает рост</p>
+<ul style="font-size:32px;line-height:1.4">
+<li>фармацевтика, резина и пластмассы, металлообработка, продукция для ОПК</li>
+<li>около 2 тыс. промышленных роботов на предприятиях</li>
+<li>лайт-индастриал: модульные производственные боксы для МСП</li>
+</ul>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Промышленность · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">06 / 15</p></div>
+<aside>Отгрузка по промышленным видам деятельности: 7 794,4 млрд ₽ в 2025 году, 8 398,0 млрд в 2026-м (оценка), 11 743,2 млрд в 2029-м (базовый). Индекс промпроизводства: 102,7% (2025), 104,0% (2026), затем 106,5 / 107,8 / 108,6% по базовому варианту — в среднем 7,6% в год (с. 40–42 записки). Структура обработки — с. 40. Ещё меры поддержки: льготные займы фондов развития промышленности, субсидии на инженерную инфраструктуру, оборудование, первый взнос по лизингу и процентную ставку (с. 41). В записке также сказано про 8,2% среднегодового роста обрабатывающих производств, но по таблице в базовом варианте выходит в среднем около 7,1% (105,9 / 107,3 / 108,2) — поэтому на слайде этой цифры нет.</aside>
+</section>
+<section id="investment" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Инвестиции: после спада — рост</h2>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:16px;width:960px">
+<p style="font-size:24px;line-height:1.4;color:#5B6475">Инвестиции в основной капитал, трлн&#160;₽; под годом — реальный прирост. 2024–2025 — отчёт, 2026 — оценка, 2027–2029 — прогноз</p>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:end">
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">1,87</p>
+<div style="width:112px;height:235px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2024</p>
+<p style="font-size:24px;color:#4A5568">+6,4%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">2,11</p>
+<div style="width:112px;height:265px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2025</p>
+<p style="font-size:24px;color:#4A5568">+4,0%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">2,05</p>
+<div style="width:112px;height:257px;background:#C62828;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2026</p>
+<p style="font-size:24px;font-weight:600;color:#C62828">−8,6%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">2,24</p>
+<div style="width:112px;height:281px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2027</p>
+<p style="font-size:24px;color:#4A5568">+4,2%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">2,46</p>
+<div style="width:112px;height:309px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2028</p>
+<p style="font-size:24px;color:#4A5568">+5,4%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">2,71</p>
+<div style="width:112px;height:340px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2029</p>
+<p style="font-size:24px;color:#4A5568">+5,8%</p>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:Manrope, Arial, sans-serif;font-size:44px;font-weight:800;line-height:1.2">2-е место в России</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">по объёму инвестиций: 2,1&#160;трлн&#160;₽ в 2025 году</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:Manrope, Arial, sans-serif;font-size:44px;font-weight:800;line-height:1.2">52% / 48%</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">собственные и привлечённые средства; в привлечённых 40% — кредиты, 37% — бюджет</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:Manrope, Arial, sans-serif;font-size:44px;font-weight:800;line-height:1.2">42 соглашения</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">на ПМЭФ-2026 почти на 95&#160;млрд&#160;₽</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Инвестиции · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">07 / 15</p></div>
+<aside>Таблица, млрд ₽: 1 869,8 (2024), 2 106,4 (2025), 2 050,3 (2026, оценка), 2 243,3 / 2 461,4 / 2 710,9 (2027–2029, базовый). Индекс физического объёма: 106,4 / 104,0 / 91,4 / 104,2 / 105,4 / 105,8. Среднегодовой рост в 2027–2029 — 5,1% (с. 48). Источники и ПМЭФ — с. 47: за четыре года на ПМЭФ подписано соглашений более чем на 1,2 трлн ₽, 83% проектов реализованы или на завершающей стадии. Стимулы для роботизации (с. 48): инвестиционный вычет 90% расходов на роботов, льгота по налогу на имущество при вложениях от 50 млн ₽ (до 1 января 2029 года), субсидии производителям робототехники.</aside>
+</section>
+<section id="housing" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Жильё: после рекорда — спад</h2>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:16px;width:1000px">
+<p style="font-size:24px;color:#5B6475">Объём жилищного строительства, млн&#160;м² общей площади</p>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:end">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">11,4</p>
+<div style="width:120px;height:347px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2024</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">12,5</p>
+<div style="width:120px;height:380px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2025</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">8,1</p>
+<div style="width:120px;height:246px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2026</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<div style="display:flex;flex-direction:row;align-items:end;gap:8px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">6,7</p>
+<div style="width:72px;height:204px;background:#FBFBF8;border:3px solid #2563EB;border-radius:8px 8px 0 0"></div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">7,5</p>
+<div style="width:72px;height:228px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+</div>
+</div>
+<p style="font-size:24px;font-weight:600">2027</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<div style="display:flex;flex-direction:row;align-items:end;gap:8px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">6,7</p>
+<div style="width:72px;height:204px;background:#FBFBF8;border:3px solid #2563EB;border-radius:8px 8px 0 0"></div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">8,2</p>
+<div style="width:72px;height:250px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+</div>
+</div>
+<p style="font-size:24px;font-weight:600">2028</p>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<div style="display:flex;flex-direction:row;align-items:end;gap:8px">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">5,8</p>
+<div style="width:72px;height:176px;background:#FBFBF8;border:3px solid #2563EB;border-radius:8px 8px 0 0"></div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">8,8</p>
+<div style="width:72px;height:268px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+</div>
+</div>
+<p style="font-size:24px;font-weight:600">2029</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:center">
+<div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+<div style="width:24px;height:24px;background:#B8C0CC;border-radius:4px"></div>
+<p style="font-size:24px;color:#4A5568">отчёт, оценка 2026</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+<div style="width:24px;height:24px;background:#2563EB;border-radius:4px"></div>
+<p style="font-size:24px;color:#4A5568">базовый</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:12px;align-items:center">
+<div style="width:24px;height:24px;background:#FBFBF8;border:3px solid #2563EB;border-radius:4px"></div>
+<p style="font-size:24px;color:#4A5568">консервативный</p>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">77%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">жилья 2025 года — индивидуальные дома (9,64&#160;млн&#160;м²); многоквартирные — 23%</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">67%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">ввод жилья в I полугодии 2026 года к I полугодию 2025-го: 4,4&#160;млн&#160;м²</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Строительство · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">08 / 15</p></div>
+<aside>Таблица, тыс. м²: 11 404,5 (2024), 12 491,4 (2025), 8 101,0 (2026, оценка); прогноз — консервативный / базовый: 6 700,2 / 7 536,0 (2027), 6 700,0 / 8 209,0 (2028), 5 798,1 / 8 800,0 (2029). Даже в базовом варианте 2029 год остаётся ниже уровня 2024–2025 годов. Лидеры по вводу в 2025 году (с. 49): Одинцовский округ — 889,6 тыс. м², Истра — 874,1, Раменский — 816, Домодедово — 718,6, Дмитровский — 667. Семей, улучшивших жилищные условия: 288,3 тыс. в 2025 году, по прогнозу 363,5 тыс. в 2029-м.</aside>
+</section>
+<section id="labor" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Рынок труда: безработицы почти нет</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">0,10%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">регистрируемая безработица к 2029 году (0,12% в 2025-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">5,07&#160;млн</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">рабочая сила в 2029 году (4,77&#160;млн в 2025-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">4,45&#160;млн</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">занятых в экономике в 2029 году (4,07&#160;млн в 2025-м)</p>
+</div>
+</div>
+<table style="width:1664px;font-size:32px;color:#14213D">
+<tr style="background:#E6E9EE"><th style="width:60%;text-align:left">Рынок труда подробнее</th><th style="width:20%;text-align:right">2025</th><th style="width:20%;text-align:right">2029, базовый</th></tr>
+<tr><td>Иностранные трудовые мигранты, тыс. чел.</td><td>419,6</td><td>432,0</td></tr>
+<tr><td>Работающие пенсионеры и подростки, тыс. чел.</td><td>395,2</td><td>428,1</td></tr>
+<tr><td>Создано рабочих мест, тыс.</td><td>80,5</td><td>76,2</td></tr>
+<tr><td>Безработица по методологии МОТ, %</td><td>1,6</td><td>1,7</td></tr>
+</table>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Рынок труда · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">09 / 15</p></div>
+<aside>Пояснительная записка, с. 50–51, и таблица раздела 11. Рабочая сила: 4 765,1 тыс. (2025) → 4 886,6 тыс. (2026) → 5 067,2 тыс. (2029, базовый). Занятые: 4 073,6 тыс. (2025) → 4 177,6 тыс. (2026) → 4 453,7 тыс. (2029). Зарегистрированных безработных — 5,5 тыс. на конец 2025 года (минус 9,8% за год). Новые рабочие места: 72,9 тыс. в 2026 году (оценка), 76,2 тыс. в 2029-м. Строка «работающие пенсионеры и подростки» — в таблице «лица старше трудоспособного возраста и подростки, занятые в экономике».</aside>
+</section>
+<section id="incomes" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Зарплата: 163,6&#160;тыс.&#160;₽ к 2029 году</h2>
+<div style="display:flex;flex-direction:row;gap:64px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:16px;width:960px">
+<p style="font-size:24px;line-height:1.4;color:#5B6475">Средняя начисленная зарплата, тыс.&#160;₽; под годом — рост реальной зарплаты</p>
+<div style="display:flex;flex-direction:row;gap:24px;align-items:end">
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">99,2</p>
+<div style="width:112px;height:133px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2024</p>
+<p style="font-size:24px;color:#4A5568">+10,3%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">117,1</p>
+<div style="width:112px;height:158px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2025</p>
+<p style="font-size:24px;color:#4A5568">+9,2%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">130,1</p>
+<div style="width:112px;height:175px;background:#B8C0CC;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2026</p>
+<p style="font-size:24px;color:#4A5568">+5,1%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">139,3</p>
+<div style="width:112px;height:187px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2027</p>
+<p style="font-size:24px;font-weight:600;color:#C62828">+1,4%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">150,8</p>
+<div style="width:112px;height:203px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2028</p>
+<p style="font-size:24px;color:#4A5568">+3,0%</p>
+</div>
+<div style="width:140px;display:flex;flex-direction:column;align-items:center;gap:12px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:700">163,6</p>
+<div style="width:112px;height:220px;background:#2563EB;border-radius:8px 8px 0 0"></div>
+<p style="font-size:24px;font-weight:600">2029</p>
+<p style="font-size:24px;color:#4A5568">+3,3%</p>
+</div>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:Manrope, Arial, sans-serif;font-size:44px;font-weight:800;line-height:1.2">+2,4% в год</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">рост реальных располагаемых доходов в 2027–2029 после +11,8% в 2025-м</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h3 style="font-family:Manrope, Arial, sans-serif;font-size:44px;font-weight:800;line-height:1.2">Бедность 4,3%</h3>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">было 4,9% в 2024-м; до 2029 года уровень не снижается</p>
+</div>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;background:#FDF1D8;padding:24px 32px;border-radius:16px"><b>ЖКХ дорожает быстрее инфляции.</b> Цены на услуги ЖКХ: +13,2% в 2025 году, +13,4% в 2026-м и +10,8% в 2027-м — при общей инфляции 8,2%, 5,7% и 5,5%</p>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Доходы · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">10 / 15</p></div>
+<aside>Средняя номинальная начисленная зарплата по полному кругу организаций, руб.: 99 204,9 (2024), 117 139,2 (2025), 130 141,7 (2026, оценка), 139 251,6 / 150 809,4 / 163 628,3 (2027–2029, базовый). Реальная зарплата, % к предыдущему году: 110,3 / 109,2 / 105,1 / 101,4 / 103,0 / 103,3. Реальные располагаемые доходы: 111,8% в 2025 году, 105,7% в 2026-м, в среднем 102,4% в 2027–2029 (с. 53). Бедность 4,3% держится весь прогнозный период (таблица, раздел 12). Индексы цен — в среднем за год; инфляция 2027 года по базовому варианту — 105,5%, по консервативному — 105,8%. Источники доходов населения (с. 52): оплата труда около 56%, социальные выплаты более 11%, доходы от собственности около 9%, предпринимательство около 7%.</aside>
+</section>
+<section id="consumer" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Торговля и услуги: где рост</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">4,97&#160;трлн&#160;₽</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">розница в 2025 году, +5,0% — 2-е место в России после Москвы</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">18,8%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">доля онлайн-торговли в обороте розницы в 2025 году</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">+42,9%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">оборот розницы у ИП; рынки и ярмарки — минус 8%</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">+14,8%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">общепит в 2025 году: 420,5&#160;млрд&#160;₽</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">1,13&#160;трлн&#160;₽</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">платные услуги; около 80% — обязательные, коммунальные — 29,5%</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">6,96&#160;трлн&#160;₽</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">прогноз оборота розницы на 2029 год</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Торговля и услуги · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">11 / 15</p></div>
+<aside>Пояснительная записка, с. 53–55. Розница 2025 года — 4 969,4 млрд ₽, 105,0% в сопоставимых ценах; 2026 — 5 498,9 млрд (+6,4%); затем +3,2% / +5,2% / +4,3% в 2027–2029 по базовому варианту; 2029 год — 6 957,1 млрд ₽. По опту и общепиту область на 3-м месте после Москвы и Санкт-Петербурга; оптовая торговля в 2025 году — 14 241,7 млрд ₽, минус 2,1%. Рынки и ярмарки падают из-за 271-ФЗ: с 1 января 2026 года сельскохозяйственные рынки могут работать только в капитальных зданиях. Общепит считается по новой методологии Росстата с 2025 года. Платные услуги — 1 134,1 млрд ₽ (+5,0%).</aside>
+</section>
+<section id="sectors" data-transition="fade" style="background:#F0F2F5;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Ещё шесть направлений</h2>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Малый и средний бизнес</p>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">27,8%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">доля МСП в ВРП в 2024 году — по России 25,8%</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Сельское хозяйство</p>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">261,2</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">млрд&#160;₽ продукции к 2029 году (207,6&#160;млрд в 2025-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Наука</p>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">2,3%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">доля затрат на исследования и разработки в ВРП к 2029-му</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Дороги</p>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">1,43</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">погибших в ДТП на 10&#160;тыс. ТС к 2029-му (1,87 в 2025-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Туризм</p>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">26&#160;млн</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">туристических поездок к 2029 году (20,9&#160;млн в 2025-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #14213D;padding:24px 0 0 0">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Цифровизация</p>
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">94,3%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">«цифровая зрелость» к 2029 году (75,8% в 2025-м)</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Отрасли · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">12 / 15</p></div>
+<aside>МСП (с. 45–46): 132,1 тыс. предприятий в 2025 году — 3-е место в России; работников 2 004,1 тыс., к 2029 году — 2 486,3 тыс.; оборот 6 397,2 млрд ₽ (+9,2%), к 2029-му — 8 402,7 млрд. Сельское хозяйство (с. 42–44): 1,2% ВРП, около 100 тыс. занятых; в 2027–2029 — не менее 50 инвестпроектов в АПК. Наука (с. 44): доля инновационной продукции в отгрузке вырастет до 15% к 2029 году (в тексте база 2025 года — 12,2%, в таблице — 13,6%). ДТП (с. 45): показатель на 10 тыс. транспортных средств, так в тексте и сноске; в графе единиц таблицы написано «на 100 тыс. населения». Туризм (с. 59): 22,8 млн поездок в 2024 году, 20,9 млн в 2025-м, 23,3 млн в 2026-м (оценка). Цифровая зрелость (с. 56) — показатель Указа № 1014.</aside>
+</section>
+<section id="families" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Семьи и дети: школы, сады, выплаты</h2>
+<div style="display:flex;flex-direction:row;gap:64px">
+<div style="display:flex;flex-direction:column;gap:32px;width:700px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">6,9%&#160;→&#160;4,4%</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">школьников учатся во вторую смену: 2025 → 2029</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">67,2&#160;тыс.</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">детей до 3 лет в яслях к 2029 году (56,9&#160;тыс. в 2025-м)</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">417&#160;тыс.</p>
+<p style="font-size:32px;line-height:1.4;color:#4A5568">мест в детских садах к 2029 году (381,6&#160;тыс. в 2026-м)</p>
+</div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475;text-transform:uppercase">Региональные выплаты семьям</p>
+<div style="display:flex;flex-direction:row;gap:24px;border-top:2px solid #D9DEE5;padding:16px 0 0 0">
+<p style="flex:none;width:300px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:1.4">400&#160;тыс.&#160;₽</p>
+<p style="flex:1;font-size:32px;line-height:1.4">многодетным семьям — взамен земельного участка</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;border-top:2px solid #D9DEE5;padding:16px 0 0 0">
+<p style="flex:none;width:300px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:1.4">300&#160;тыс.&#160;₽</p>
+<p style="flex:1;font-size:32px;line-height:1.4">за третьего и следующих детей в молодой семье</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;border-top:2px solid #D9DEE5;padding:16px 0 0 0">
+<p style="flex:none;width:300px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:1.4">18&#160;тыс.&#160;₽</p>
+<p style="flex:1;font-size:32px;line-height:1.4">в месяц на уход за ребёнком-инвалидом</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:24px;border-top:2px solid #D9DEE5;padding:16px 0 0 0">
+<p style="flex:none;width:300px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:1.4">с 2026 года</p>
+<p style="flex:1;font-size:32px;line-height:1.4">часть платы за обучение детей в семьях с 4+ детьми</p>
+</div>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Социальная сфера · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">13 / 15</p></div>
+<aside>Образование — пояснительная записка, с. 56–57, и таблица раздела 16. Вторая смена: 7,9% (2024), 6,9% (2025), 4,4% к 2029 году (базовый) — за счёт ввода новых школ. Ясли (дети до 3 лет в государственных и муниципальных организациях): 56 907 → 67 169. Места в детсадах: 399,3 тыс. в 2025 году, 381,6 тыс. в 2026-м (оптимизация сети), 417 тыс. в 2029-м. Выплаты — с. 52–53: 18 тыс. ₽ в месяц положены при уходе за ребёнком-инвалидом с 3-й степенью ограничения способности к самообслуживанию; с 1 января 2026 года — ежегодная компенсация части стоимости обучения детей из многодетных семей, где четверо и более детей. В записке выплат больше: 7 тыс. ₽ в год на школьную форму детям из малообеспеченных многодетных семей, ежемесячное пособие на ребёнка, подарочный набор первокласснику и новорождённому, выплаты на питание беременным и детям до трёх лет и другие.</aside>
+</section>
+<section id="hidden" data-transition="fade" style="background:#14213D;color:#FBFBF8;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Чего в прогнозе нет</h2>
+<p style="font-size:44px;line-height:1.3;color:#F2B33D">Демография и почти весь раздел о здравоохранении скрыты: Правительство РФ временно приостановило публикацию этих данных</p>
+<div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:48px">
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">8,78&#160;млн</p>
+<p style="font-size:32px;line-height:1.4;color:#D5DAE1">жителей на конец 2024 года — последняя опубликованная цифра</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">+149,9&#160;тыс.</p>
+<p style="font-size:32px;line-height:1.4;color:#D5DAE1">миграционный прирост за 2024 год при естественной убыли −25,4&#160;тыс.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-top:4px solid #F2B33D;padding:24px 0 0 0">
+<p style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">1,491</p>
+<p style="font-size:32px;line-height:1.4;color:#D5DAE1">детей на женщину в 2029 году — единственный прогноз по демографии</p>
+</div>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#B8C0CC">Не публикуются и данные о внешней торговле, а таблицы о численности детей по муниципалитетам заполнены многоточиями</p>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B8C0CC">Данные · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B8C0CC">14 / 15</p></div>
+<aside>Разделы II и XVI пояснительной записки: «Данные раздела не представлены ввиду принятия Правительством Российской Федерации отдельных решений о временном приостановлении…» со ссылкой на 282-ФЗ «Об официальном статистическом учёте». В таблице за 2024 год ещё есть: население 8 775,7 тыс., естественная убыль −25,4 тыс., миграционный прирост +149,9 тыс., общий коэффициент рождаемости 8,2 на 1000. С 2025 года — многоточия. Суммарный коэффициент рождаемости: 1,341 (2024), 1,318 (2025), 1,375 (2026), 1,491 в 2029 году по базовому варианту (1,339 по консервативному). Из здравоохранения в таблице остались только младенческая смертность за 2024–2025 годы (3,3 и 3,0) и материнская смертность. Внешнеэкономическая деятельность не публикуется по письму Центрального таможенного управления (сноска 10).</aside>
+</section>
+<section id="takeaways" data-transition="fade" style="background:#FBFBF8;color:#14213D;font-family:Inter, Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-family:Manrope, Arial, sans-serif;font-size:72px;font-weight:800;line-height:1.1;letter-spacing:-1px">Что важно запомнить</h2>
+<div style="display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;flex-direction:row;gap:32px;align-items:center">
+<p style="flex:none;width:72px;height:72px;background:#F2B33D;border-radius:9999px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:2.25;text-align:center">1</p>
+<p style="flex:1;font-size:32px;line-height:1.4"><b>2026 год — самый слабый в прогнозе:</b> прибыль, инвестиции, стройка и жильё уходят в минус</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:center">
+<p style="flex:none;width:72px;height:72px;background:#F2B33D;border-radius:9999px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:2.25;text-align:center">2</p>
+<p style="flex:1;font-size:32px;line-height:1.4"><b>Рост возвращается с 2027 года:</b> ВРП +2,6% в год, промышленность +7,6% в год по базовому варианту</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:center">
+<p style="flex:none;width:72px;height:72px;background:#F2B33D;border-radius:9999px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:2.25;text-align:center">3</p>
+<p style="flex:1;font-size:32px;line-height:1.4"><b>Жильё не вернётся к рекорду 2025 года:</b> 8,8&#160;млн&#160;м² в 2029-м против 12,5&#160;млн&#160;м²</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:center">
+<p style="flex:none;width:72px;height:72px;background:#F2B33D;border-radius:9999px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:2.25;text-align:center">4</p>
+<p style="flex:1;font-size:32px;line-height:1.4"><b>Работа есть, но доходы растут медленно:</b> безработица 0,10%, реальные доходы +2,4% в год, а ЖКХ дорожает быстрее инфляции</p>
+</div>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:center">
+<p style="flex:none;width:72px;height:72px;background:#F2B33D;border-radius:9999px;font-family:Manrope, Arial, sans-serif;font-size:32px;font-weight:800;line-height:2.25;text-align:center">5</p>
+<p style="flex:1;font-size:32px;line-height:1.4"><b>Данных становится меньше:</b> демография, здравоохранение и внешняя торговля закрыты</p>
+</div>
+</div>
+<div style="position:absolute;left:128px;bottom:64px;width:1664px;display:flex;flex-direction:row;justify-content:space-between;align-items:center"><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">Итоги · Прогноз Московской области 2027–2029</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#5B6475">15 / 15</p></div>
+<aside>Сам документ заканчивается выводом, что прогнозные значения «свидетельствуют о положительной динамике и дальнейшем развитии экономики и социальной сферы». Все цифры этой презентации — из постановления № 1322-ПП/37; там, где текст записки и таблица расходятся в цифрах, на слайдах — значение из таблицы, а расхождение описано в заметках к слайду.</aside>
+</section>
+</div>
+</div>
+</div>
+<aside class="notes" id="notes" hidden><strong>Заметки и источники</strong><div id="notes-text"></div></aside>
+<nav class="controls" aria-label="Слайды">
+<button type="button" id="prev" aria-label="Предыдущий слайд">←</button>
+<span class="counter" id="counter">1 / 1</span>
+<button type="button" id="next" aria-label="Следующий слайд">→</button>
+<button type="button" id="notes-toggle" aria-pressed="false">Заметки</button>
+<button type="button" id="fullscreen">На весь экран</button>
+<span class="hint">← → листать · N заметки · F полный экран</span>
+</nav>
+<script>
+(function () {
+  var stage = document.querySelector(".stage");
+  var frame = document.querySelector(".frame");
+  var viewport = document.querySelector(".viewport");
+  var slides = Array.prototype.slice.call(stage.children);
+  var counter = document.getElementById("counter");
+  var notes = document.getElementById("notes");
+  var notesText = document.getElementById("notes-text");
+  var notesToggle = document.getElementById("notes-toggle");
+  var current = 0;
+
+  slides.forEach(function (slide) {
+    slide.querySelectorAll("table").forEach(function (table) {
+      var header = table.rows[0];
+      if (!header) return;
+      Array.prototype.forEach.call(header.cells, function (cell, column) {
+        var align = cell.style.textAlign;
+        if (!align) return;
+        Array.prototype.forEach.call(table.rows, function (row) {
+          var target = row.cells[column];
+          if (target && !target.style.textAlign) target.style.textAlign = align;
+        });
+      });
+    });
+  });
+
+  function fit() {
+    var scale = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
+    frame.style.width = 1920 * scale + "px";
+    frame.style.height = 1080 * scale + "px";
+    stage.style.transform = "scale(" + scale + ")";
+  }
+
+  function slideFromHash() {
+    var n = parseInt(location.hash.replace("#", ""), 10);
+    return isNaN(n) ? 0 : n - 1;
+  }
+
+  function show(n) {
+    current = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (slide, index) {
+      slide.classList.toggle("active", index === current);
+      slide.setAttribute("aria-hidden", index === current ? "false" : "true");
+    });
+    counter.textContent = current + 1 + " / " + slides.length;
+    var aside = slides[current].querySelector("aside");
+    notesText.textContent = aside ? aside.textContent : "Заметок к этому слайду нет.";
+    var hash = "#" + (current + 1);
+    if (location.hash !== hash) history.replaceState(null, "", hash);
+  }
+
+  function toggleNotes() {
+    var open = notes.hidden;
+    notes.hidden = !open;
+    notesToggle.setAttribute("aria-pressed", open ? "true" : "false");
+  }
+
+  function toggleFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+  }
+
+  document.getElementById("prev").addEventListener("click", function () { show(current - 1); });
+  document.getElementById("next").addEventListener("click", function () { show(current + 1); });
+  notesToggle.addEventListener("click", toggleNotes);
+  document.getElementById("fullscreen").addEventListener("click", toggleFullscreen);
+
+  frame.addEventListener("click", function (event) {
+    if (window.getSelection && String(window.getSelection())) return;
+    var box = frame.getBoundingClientRect();
+    show(event.clientX - box.left < box.width / 3 ? current - 1 : current + 1);
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    var key = event.key;
+    if (key === "ArrowRight" || key === "PageDown" || key === " " || key === "Enter") { show(current + 1); event.preventDefault(); }
+    else if (key === "ArrowLeft" || key === "PageUp" || key === "Backspace") { show(current - 1); event.preventDefault(); }
+    else if (key === "Home") show(0);
+    else if (key === "End") show(slides.length - 1);
+    else if (key === "n" || key === "N" || key === "т" || key === "Т") toggleNotes();
+    else if (key === "f" || key === "F" || key === "а" || key === "А") toggleFullscreen();
+  });
+
+  var touchX = null;
+  frame.addEventListener("touchstart", function (event) { touchX = event.touches[0].clientX; }, { passive: true });
+  frame.addEventListener("touchend", function (event) {
+    if (touchX === null) return;
+    var dx = event.changedTouches[0].clientX - touchX;
+    touchX = null;
+    if (Math.abs(dx) > 40) show(dx < 0 ? current + 1 : current - 1);
+  });
+
+  window.addEventListener("resize", fit);
+  window.addEventListener("hashchange", function () { show(slideFromHash()); });
+  fit();
+  show(slideFromHash());
+})();
+</script>
+</body>
+</html>
